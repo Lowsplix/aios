@@ -18,7 +18,7 @@ You are building one or more skills inside the `aios-core` Claude Code plugin: a
         ├── connect/SKILL.md
         └── doctor/SKILL.md
 ```
-Write ONLY the skill folder(s) assigned to you. Use absolute paths under `/Users/adir/repos/aios/`.
+Write ONLY the skill folder(s) assigned to you. Use absolute paths under `<repo-root>/`.
 
 ## Language + voice (non-negotiable)
 - **All user-facing skill content is in HEBREW.** Simple, clear, warm-professional. Talk to a busy solo business owner, not an engineer.

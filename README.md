@@ -4,7 +4,7 @@ A Claude Code plugin marketplace for delivering Hebrew AI operating systems to c
 
 ## Layout
 ```
-aios/                                  ← marketplace repo (this, private GitHub)
+aios/                                  ← marketplace repo (this, GitHub: Lowsplix/aios)
 ├── .claude-plugin/marketplace.json    ← lists the plugins
 └── plugins/
     └── aios-core/                      ← THE STANDARD LAYER (install for every client)
@@ -20,11 +20,11 @@ aios/                                  ← marketplace repo (this, private GitHu
             ├── update/         /update       עדכון: pull latest plugin (self-update, no client action)
             └── health-ping/    /health-ping  פינג בריאות: daily heartbeat to Adir (fleet view)
 ```
-Per-client vertical plugins (e.g. `aios-realestate` for Barak's deal-sourcing/ranking/owner-id) get added under `plugins/` and listed in the marketplace later.
+Per-client vertical plugins (e.g. a real-estate `aios-realestate` with deal-sourcing/ranking/owner-id) get added under `plugins/` and listed in the marketplace later.
 
 ## Install (per client)
 ```
-/plugin marketplace add <git-url-of-this-repo>
+/plugin marketplace add Lowsplix/aios
 /plugin install aios-core@aios
 ```
 Then in an empty folder (the future vault): `/onboard`. After that: `/connect`, then the rest.
