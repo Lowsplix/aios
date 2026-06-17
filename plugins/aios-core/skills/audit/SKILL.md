@@ -19,8 +19,9 @@ description: "Inspects the AIOS vault against the 4 C's (Context, Connections, C
 # הקשר: כמה קבצי Context קיימים ועד כמה הם מלאים
 ls -la Context/ 2>/dev/null
 wc -l Context/*.md 2>/dev/null
-# סמן קבצים ריקים או רק-תבנית (פחות מ-15 שורות, או מלאים בסוגריים מרובעים של מקומות ריקים)
-grep -rl '\[.*\]' Context/ 2>/dev/null
+# סמן קבצים ריקים או רק-תבנית. מציין מקום אמיתי מהשלד = סוגריים מרובעים בודדים עם טקסט עברית בפנים
+# (למשל "[שם, תפקיד]"). חובה לא לספור frontmatter (tags:), קולאאוטים ([!note]), או קישורי ויקי ([[...]]).
+grep -rnE '\[[^]!]*[א-ת][^]]*\]' Context/ 2>/dev/null | grep -v 'tags:' | grep -v '\[\[' | grep -v '\[!'
 
 # יכולות: אילו מיומנויות ותתי-סוכנים קיימים
 ls -d Skills/*/ 2>/dev/null
@@ -106,7 +107,7 @@ tags: [audit, health, 4c]
 
 ## שלב 5: רישום ריצה
 
-הוסף שורת לוג ל-`System/logs/YYYY-MM-DD.md` (צור את הקובץ אם אין) ועדכן את שורת `audit` ב-`System/health/status.md` (חותמת זמן אחרונה + סטטוס).
+הוסף שורת לוג ל-`System/logs/YYYY-MM-DD.md` (צור את הקובץ אם אין) ועדכן את שורת `audit` בטבלת השגרות ב-`System/health/status.md` (חותמת זמן אחרונה + סטטוס). שים לב: השלד של `status.md` (זה ש-`/connect` ו-`/doctor` יוצרים) כולל רק שורת `morning-report`. אם אין שורת `audit`, הוסף אותה לטבלת השגרות (בפורמט הזהה: `| audit | {תאריך} | ✅ הצליח | על פי דרישה |`) ואז עדכן אותה. אל תדרוס את שורת `morning-report`.
 
 ```bash
 DATE=$(date +%F); TIME=$(date +%H:%M)
