@@ -1,0 +1,15 @@
+{
+  "name": "aios",
+  "owner": { "name": "Adir Sellam", "email": "adir@adirsellam.com" },
+  "metadata": {
+    "description": "Adir Sellam client AI Operating Systems. A base plugin installed for every client plus per-client vertical plugins.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "aios-core",
+      "source": "./plugins/aios-core",
+      "description": "Standard AIOS layer installed for every client: onboarding, connections (Gmail/Drive/Calendar), audit + level-up self-improvement loop, daily morning report, WhatsApp supervisor, and a health doctor."
+    }
+  ]
+}
