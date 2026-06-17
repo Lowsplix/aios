@@ -26,27 +26,37 @@ TARGET="$(grep -m1 'whatsapp:' System/health/maintainer.md 2>/dev/null | sed 's/
 בנה שורת סטטוס בעברית, לדוגמה:
 `[שם הלקוח] | 2026-06-18 | gws ✅ | wacli ✅ | דוח בוקר ✅ 07:00 | סריקה ❌ אתמול | גרסה 0.1.0`
 
-שלח דרך wacli לאדיר (אחרי `wacli doctor`), או הוסף שורה ל-Google Sheet דרך gws:
+> [!warning] בדיקת מערכת הפעלה קודם. ערוץ הוואטסאפ של הדופק רץ על `wacli`, שקיים רק על macOS. במכונת Windows הוא לא קיים, וזה תקין. אל תיכשל בגלל זה. אם יש מקור gws (Google Sheet) מוגדר ב-`maintainer.md`, העדף אותו, הוא חוצה מערכות הפעלה ועובד גם ב-Windows. אם אין ערוץ זמין בכלל, כתוב את שורת הסטטוס ל-`System/health/status.md` (הדופק "נשמר מקומית"), רשום `⚠️ חלקי` עם "WhatsApp לא זמין במכונה הזו (wacli דורש macOS)", ואל תיכשל. ממשק הוואטסאפ דורש מכונת macOS או ממסר (relay), והוא מתוכנן כתוספת קרובה.
+
+נסה לפי הסדר: קודם Google Sheet דרך gws אם הוגדר (חוצה מערכות הפעלה), אחר כך wacli אם קיים. אם אף ערוץ לא זמין, הדופק נכתב מקומית ל-`System/health/status.md`.
 
 ```bash
-wacli doctor >/dev/null 2>&1 && wacli send --to "$TARGET" --text "$STATUS_LINE"
+if command -v wacli >/dev/null 2>&1; then
+  # macOS: שלח בוואטסאפ אחרי שער חיות
+  wacli doctor >/dev/null 2>&1 && wacli send --to "$TARGET" --text "$STATUS_LINE"
+else
+  # Windows או אין wacli: הדופק לא נשלח בוואטסאפ. השתמש ב-gws אם מוגדר, אחרת שמור מקומית.
+  echo "⚠️ wacli לא קיים (דורש macOS). דופק לא נשלח בוואטסאפ. שמור ל-System/health/status.md או שלח דרך gws אם מוגדר Sheet."
+fi
 ```
 
 ## שלב 4: רישום
 
-הוסף שורת לוג ל-`System/logs/YYYY-MM-DD.md`:
+הוסף שורת לוג ל-`System/logs/YYYY-MM-DD.md`. אם הדופק נשלח בערוץ כלשהו, סמן ✅ הצליח. אם הוא רק נשמר מקומית כי הוואטסאפ לא זמין (Windows), סמן ⚠️ חלקי וציין זאת:
 
 ```
 - HH:MM | health-ping | ✅ הצליח | נשלח דופק לאדיר | משך: Ns
+- HH:MM | health-ping | ⚠️ חלקי | WhatsApp לא זמין במכונה הזו (wacli דורש macOS), דופק נשמר מקומית | משך: Ns
 ```
 
 ## תזמון
 
-תזמן פעם ביום (למשל 07:05, מיד אחרי דוח הבוקר) דרך `schedule`/cron/launchd. המחשב צריך להיות דלוק בזמן התזמון.
+תזמן פעם ביום (למשל 07:05, מיד אחרי דוח הבוקר). דרך אחת חוצת מערכות הפעלה: אפליקציית Claude Desktop, "Routines" (משימה מקומית), או מיומנות ה-`schedule`. המשימה רצה על המחשב הזה, אז הוא חייב להיות דלוק בשעת התזמון. (על macOS אפשר במקום זאת `cron`. ב-Windows אין `cron`.)
 
 ## חוקים
 
 - שלח רק סיכום בריאות: שמות רכיבים, ✅/⚠️/❌, חותמות זמן, גרסה. לעולם לא תוכן עסקי, לא לידים, לא פרטי לקוחות.
 - צריך אישור הלקוח שהדופק נשלח לאדיר. זה מוגדר פעם אחת ב-`maintainer.md`.
 - אם אין יעד מוגדר, אל תשלח, בקש להגדיר.
-- תמיד `wacli doctor` לפני שליחה.
+- בדוק קודם מערכת הפעלה. `wacli` קיים רק על macOS. במכונת Windows אל תיכשל: העדף Google Sheet דרך gws אם מוגדר, אחרת שמור את הדופק מקומית ל-`System/health/status.md` ורשום ⚠️ חלקי.
+- כשמשתמשים ב-`wacli`, תמיד `wacli doctor` לפני שליחה.
