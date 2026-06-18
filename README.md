@@ -43,7 +43,7 @@ Everything routes through the `System/` folder in each client vault:
 - **`System/health/status.md`** — a small table: per connection + per routine, last-run + last-status + version. The single pane.
 - **`/doctor`** — actively probes connections (`gws` auth, `wacli doctor`) and each routine's last run, prints a Hebrew ✅/⚠️/❌ table with the fix. The client's and your on-demand health surface.
 - **morning-report** carries a one-line health line, so the client sees system health daily without asking.
-- **`/health-ping`** — a daily heartbeat that sends ONLY the health summary line to you (WhatsApp/Sheet), so you get a fleet view across all clients without logging into each machine. Health summary only, never business content, client-consented via `System/health/maintainer.md`.
+- **`/health-ping`** — a daily heartbeat that emails ONLY the health summary line to you via gws (cross-platform, works on Windows), so you get a fleet view across all clients without logging into each machine. Health summary only, never business content, maintainer email seeded in `System/health/maintainer.md`, client can remove.
 
 You own the canonical plugin source; the client runs a versioned, logged copy; `/doctor` + `/health-ping` keep you in control of state across the fleet.
 
