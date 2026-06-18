@@ -1,6 +1,9 @@
 {
   "name": "aios-core",
   "description": "AIOS shכבת הליבה. מערכת הפעלה מבוססת Claude Code + Obsidian ללקוחות של אדיר סלם. הקמה, חיבור מערכות, ביקורת עצמית ושיפור, דוח בוקר, וניהול בוואטסאפ. Skills: /onboard (הקמה ותשאול), /connect (חיבור Gmail/Drive/Calendar דרך gws), /audit (ציון 4C ופערים), /level-up (הצעת המיומנות הבאה לבנות), /morning-report (דוח בוקר יומי), /supervisor (תשאול וניהול המערכת בוואטסאפ), /doctor (בדיקת בריאות המערכת). Use when user says onboard, setup, הקמה, connect, חיבור, audit, ביקורת, level up, morning report, דוח בוקר, supervisor, doctor, or runs the matching slash command.",
-  "version": "0.1.0",
-  "author": { "name": "Adir Sellam", "email": "adir@adirsellam.com" }
+  "version": "0.2.0",
+  "author": {
+    "name": "Adir Sellam",
+    "email": "adir@adirsellam.com"
+  }
 }
