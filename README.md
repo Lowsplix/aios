@@ -18,9 +18,10 @@ aios/                                  ← marketplace repo (this, GitHub: Lowsp
             ├── supervisor/     /supervisor   supervisor: query/command the system over WhatsApp
             ├── doctor/         /doctor       doctor: health check of connections + routines
             ├── update/         /update       update: pull latest plugin (self-update, no client action)
-            └── health-ping/    /health-ping  health ping: daily heartbeat to Adir (fleet view)
+            ├── health-ping/    /health-ping  health ping: daily heartbeat to Adir (fleet view)
+            └── install/        /install      install: install a vertical the client got as a file (zip/folder in ~/Downloads)
 ```
-Per-client vertical plugins (e.g. a real-estate `aios-realestate` with deal-sourcing/ranking/owner-id) get added under `plugins/` and listed in the marketplace later.
+Per-client vertical plugins (e.g. a real-estate `aios-realestate` with deal-sourcing/ranking/owner-id) stay **private**. Instead of a public marketplace entry, Adir ships the vertical as a file (a zip on Drive or email). The client drops it in `~/Downloads` and runs `/install`, which validates it, registers it as a local marketplace, and installs it on top of `aios-core`. This keeps each client's competitive logic off any public repo.
 
 ## Install (per client)
 In your terminal (NOT inside the Claude Code REPL), make sure Claude Code is current, then add the marketplace and install. These are `claude` shell commands, not slash commands:
