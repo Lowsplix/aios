@@ -5,22 +5,24 @@ status: active
 tags: [context, brand]
 ---
 
-> [!note] הקול והמותג: איך אני נשמע, ומה מבדל אותי. הבסיס לכל תוכן שנכתב בשמי.
+> [!note] The voice and the brand: how I sound, and what sets me apart. The baseline for every piece of content written in my name.
 
-## הקול שלי
-[מילים שמתארות איך אני נשמע: ישיר, חם, יבש, טכני, משחקי. תארים]
+These fields are filled at runtime by `/onboard` in Hebrew: the client's answers are written in Hebrew under these English headers.
 
-## ביטויים שאני משתמש בהם
-[ביטויי חתימה אמיתיים שיוצאים לי]
+## My voice
+[Words that describe how I sound: direct, warm, dry, technical, playful. Adjectives]
 
-## מילים שלא נוגעים בהן
-[מילים או ביטויים שלא הייתי משתמש בהם לעולם]
+## Phrases I use
+[Real signature phrases that come out of me]
 
-## דוגמת כתיבה
-[פסקה אמיתית שכתבתי, או קישור אליה. ממנה לומדים את הקול]
+## Words I never touch
+[Words or phrases I would never use]
 
-## מה מבדל אותי
-[נגד מי אני נלחם, ואיך אני פותר את הבעיה אחרת מהאלטרנטיבה הברורה]
+## Writing sample
+[A real paragraph I wrote, or a link to it. The voice is learned from it]
 
-## המסרים המרכזיים
-[3 עד 4 מסרים שאני רוצה שיקשרו לשם שלי]
+## What sets me apart
+[Who I am fighting against, and how I solve the problem differently from the obvious alternative]
+
+## Core messages
+[3 to 4 messages I want associated with my name]

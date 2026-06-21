@@ -1,102 +1,91 @@
-# התקנה על Windows (מדריך ללקוח)
+# Windows Setup (client guide)
 
-> [!note] רשימת התקנה פשוטה למחשב Windows. עוברים עליה לפי הסדר, בדרך כלל יחד בשיתוף מסך. אין צורך בידע טכני: כל שלב הוא הורדה אחת או הדבקה אחת של שורה.
+> [!note] A plain checklist for installing on a Windows PC. Go through it in order, usually together over a screen share. No technical knowledge needed: every step is one download or one paste of a single line.
 
-המערכת רצה על Windows באופן מקורי. צריך להתקין כמה דברים פעם אחת, ואז הכל עובד. עוברים על השלבים אחד-אחד, ולא ממשיכים לשלב הבא לפני שהקודם הסתיים. אם משהו נתקע, עוצרים ושואלים, אין לחץ.
+The system runs natively on Windows. You install a few things once, and then everything works. Go through the steps one by one, and do not move to the next step before the previous one finished. If something gets stuck, stop and ask, no pressure.
 
-לפני שמתחילים: כמה התקנות מבקשות הרשאת מנהל (admin). זה נורמלי. אם יקפוץ חלון של Windows ששואל "לאפשר לאפליקציה לבצע שינויים?", לוחצים **כן** (Yes).
+Before you start: some installers ask for administrator (admin) rights. That is normal. If a Windows window pops up asking "Do you want to allow this app to make changes?", click **Yes**.
 
-## שלב 1: התקנת Claude Code
+## Step 1: Install Claude Code
 
-זה המוח של המערכת. מתקינים אותו דרך חלון בשם PowerShell.
+This is the brain of the system. You install it through a window called PowerShell.
 
-1. לוחצים על כפתור התחל (Start), מקלידים `PowerShell`, ופותחים את **Windows PowerShell**.
-2. מדביקים את השורה הבאה (קליק ימני מדביק ב-PowerShell), ולוחצים Enter:
+1. Click the Start button, type `PowerShell`, and open **Windows PowerShell**.
+2. Paste the following line (right-click pastes in PowerShell) and press Enter:
 
 ```powershell
 irm https://claude.ai/install.ps1 | iex
 ```
 
-3. מחכים שההתקנה תסתיים. בסוף סוגרים את החלון.
+3. Wait for the install to finish. When it is done, close the window.
 
-> הערה: ההתקנה עשויה לבקש הרשאת מנהל. אם קופץ חלון אישור, לוחצים כן.
+> Note: the install may ask for admin rights. If a confirmation window pops up, click Yes.
 
-## שלב 2: התקנת Git for Windows (זה מה שמפעיל את הפקודות של המערכת)
+## Step 2: Install Git for Windows (this is what runs the system's commands)
 
-זה החלק הכי חשוב בהתקנה. בלי זה, חלק מהפקודות של המערכת פשוט לא יעבדו. עם זה, הכל עובד חלק.
+This is the most important part of the install. Without it, some of the system's commands simply will not work. With it, everything runs smoothly.
 
-1. נכנסים לכתובת: `https://git-scm.com/download/win`
-2. ההורדה מתחילה לבד (אם לא, לוחצים על הקישור המתאים ל-64-bit).
-3. פותחים את הקובץ שירד ולוחצים **Next** בכל המסכים. **משאירים את כל ברירות המחדל כמו שהן**, לא צריך לשנות כלום. בסוף לוחצים **Install** ואז **Finish**.
+1. Go to: `https://git-scm.com/download/win`
+2. The download starts on its own (if not, click the link for 64-bit).
+3. Open the file that downloaded and click **Next** on every screen. **Leave all the defaults as they are**, you do not need to change anything. At the end click **Install** and then **Finish**.
 
-> הערה: ההתקנה מבקשת הרשאת מנהל. לוחצים כן. הסיבה שמתקינים את זה: היא מביאה כלי בשם Git Bash, וזה מה שמאפשר למערכת להריץ את הפקודות שלה בצורה תקינה.
+> Note: the install asks for admin rights. Click Yes. The reason you install this: it brings a tool called Git Bash, and that is what lets the system run its commands correctly.
 
-## שלב 3: התקנת Node.js (נחוץ לחיבור לגוגל)
+## Step 3: Install Node.js (needed for the Google connection)
 
-זה מה שמאפשר למערכת להתחבר לג'ימייל, לדרייב וליומן שלך, דרך כלי בשם gws.
+This is what lets the system connect to your Gmail, Drive, and Calendar, through a tool called gws.
 
-1. נכנסים לכתובת: `https://nodejs.org`
-2. לוחצים על הכפתור הגדול שמסומן **LTS** (זו הגרסה היציבה).
-3. פותחים את הקובץ שירד, לוחצים **Next** בכל המסכים, ומשאירים את ברירות המחדל. בסוף **Install** ואז **Finish**.
+1. Go to: `https://nodejs.org`
+2. Click the big button marked **LTS** (this is the stable version).
+3. Open the file that downloaded, click **Next** on every screen, and keep the defaults. At the end click **Install** and then **Finish**.
 
-> הערה: ההתקנה מבקשת הרשאת מנהל. לוחצים כן.
+> Note: the install asks for admin rights. Click Yes.
 
-## שלב 4: אפליקציית Claude Desktop (לא חובה, מומלץ לתזמון)
+## Step 4: Claude Desktop app (optional, recommended for scheduling)
 
-זה לא חובה, אבל זה מה שמאפשר למערכת לרוץ לבד בזמנים קבועים (למשל דוח בוקר כל יום ב-07:00) דרך "Routines" (משימות מקומיות).
+This is not required, but it is what lets the system run on its own at fixed times (for example a morning report every day at 07:00) through "Routines" (local tasks).
 
-1. נכנסים לכתובת: `https://claude.com/download`
-2. מורידים את האפליקציה ל-Windows, פותחים את הקובץ, ומתקינים.
-3. נכנסים עם אותו חשבון.
+1. Go to: `https://claude.com/download`
+2. Download the app for Windows, open the file, and install it.
+3. Sign in with the same account.
 
-> שים לב: תזמון כזה רץ על המחשב שלך, אז המחשב צריך להיות דלוק בשעה שבה המשימה אמורה לרוץ. זו לא מערכת שרצה בענן 24/7, זו דחיפה של תוצאה בשעות העבודה שלך.
+> Heads-up: this kind of scheduling runs on your computer, so the computer needs to be on at the time the task is supposed to run. This is not a system that runs in the cloud 24/7, it is a push of a result during your working hours.
 
-## שלב 5: הפעלת המערכת
+## Step 5: Install the system
 
-עכשיו מתקינים את המערכת עצמה ומתחילים. פותחים חלון Claude Code (מאותו כפתור התחל, מקלידים `claude`), ומריצים את הפקודות האלה אחת-אחת:
+> [!important] The first two commands run in PowerShell, not inside Claude
+> You run the marketplace-add and the install in the **PowerShell** window (the same window from the previous steps), not inside the Claude Code screen. Only `/onboard` and `/connect` later run inside Claude.
 
-1. הוספת המאגר של אדיר:
+1. First make sure you have a current version of Claude Code (if not, this updates it on its own). In PowerShell:
 
-```
-/plugin marketplace add <כתובת המאגר>
-```
-
-2. התקנת המערכת:
-
-```
-/plugin install aios-core@aios
+```powershell
+claude update
+claude --version
 ```
 
-3. פותחים תיקייה ריקה חדשה (זו תהיה "הכספת", הבית של המערכת), ובתוכה מריצים:
+2. Add the marketplace and install the system. In PowerShell, one at a time:
+
+```powershell
+claude plugin marketplace add Lowsplix/aios
+claude plugin install aios-core@aios
+```
+
+3. Open a new empty folder (this will be "the vault", the home of the system). Go into it and open Claude Code inside it (type `claude`), and inside Claude run:
 
 ```
 /onboard
 ```
 
-זה מקים את השלד ושואל אותך כמה שאלות קצרות כדי למלא את המערכת בך ובעסק שלך.
+This bootstraps the skeleton and asks you a few short questions to fill the system with you and your business.
 
-4. אחרי ההקמה, מחברים את המערכת לעולם (גוגל, ועוד):
+4. After onboarding, connect the system to the world (Google, and more):
 
 ```
 /connect
 ```
 
-זהו. מכאן המערכת מוכנה. בכל רגע אפשר להריץ `/doctor` כדי לראות שהכל מחובר ועובד.
+That is it. From here the system is ready. At any time you can run `/doctor` to see that everything is connected and working.
 
-## מה לא עובד עדיין על Windows (וזה בסדר)
+## Optional add-on: WhatsApp connection
 
-ממשק הוואטסאפ (לשלוח ולקרוא הודעות דרך המערכת) רץ כרגע רק על מק (macOS), כי הוא מבוסס על כלי שלא קיים ל-Windows. זה לא חוסם כלום: המערכת פשוט כותבת את הדוחות והתשובות לכספת במקום לשלוח בוואטסאפ. חיבור הוואטסאפ דורש מכונת מק או ממסר (relay), והוא מתוכנן כתוספת קרובה.
-
----
-
-# Windows Setup (client guide, English mirror)
-
-Plain checklist for installing on a Windows PC, in order. No technical knowledge needed. Some steps need admin rights (click Yes if Windows asks to allow changes).
-
-1. **Claude Code**: open Windows PowerShell, paste `irm https://claude.ai/install.ps1 | iex`, press Enter. (May need admin.)
-2. **Git for Windows** (the most important step, this is what makes the system's commands work): go to `https://git-scm.com/download/win`, run the installer, click Next on every screen, keep all defaults, Install, Finish. (Needs admin. It installs Git Bash, which the system's commands run inside.)
-3. **Node.js LTS** (needed for the Google connection via gws): go to `https://nodejs.org`, click the **LTS** button, run the installer, keep defaults. (Needs admin.)
-4. **Claude Desktop app** (optional, recommended for scheduling): go to `https://claude.com/download`, install, sign in. Used for "Routines" (local tasks). The PC must be on at the scheduled time, this is not a 24/7 cloud server.
-5. **Start the system**: open Claude Code, then run, one at a time: `/plugin marketplace add <repo>`, then `/plugin install aios-core@aios`, then open an empty folder (your future vault) and run `/onboard`, then `/connect`. Run `/doctor` anytime to check everything is connected.
-
-**Not available on Windows yet (that's fine):** the WhatsApp interface runs on macOS only for now (its underlying tool has no Windows build). Nothing breaks: the system writes reports and answers to the vault instead of sending them on WhatsApp. WhatsApp needs a macOS machine or a relay, planned as a fast-follow.
+The WhatsApp interface (sending and reading messages through the system) works on Windows too. It is based on a tool called wacli that has a Windows build, and the `/connect` command installs it on its own per operating system. This is an optional add-on: even without it the system works great and writes the reports to the vault. If you choose not to connect WhatsApp, just skip this step. The health report to Adir is sent by email anyway, separately.

@@ -5,13 +5,15 @@ status: active
 tags: [context, services]
 ---
 
-> [!note] מה אני מוכר בפועל: השירותים והמוצרים, אחד אחד.
+> [!note] What I actually sell: the services and products, one by one.
 
-## השירותים והמוצרים
-[לכל אחד: שם, מה הוא פותר, למי הוא מיועד, מחיר או טווח אם יש]
+These fields are filled at runtime by `/onboard` in Hebrew: the client's answers are written in Hebrew under these English headers.
 
-## ההבטחה
-[הצעת הערך במשפט אחד, ומה הלקוח מקבל בסוף]
+## The services and products
+[For each one: name, what it solves, who it is for, price or range if there is one]
 
-## למה בוחרים בי
-[מה גורם ללקוח לבחור בי ולא באלטרנטיבה, במילים שלו אם שמעתי אותן]
+## The promise
+[The value proposition in one sentence, and what the client gets in the end]
+
+## Why they choose me
+[What makes the client choose me over the alternative, in their words if I have heard them]

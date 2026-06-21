@@ -1,143 +1,147 @@
 ---
 name: doctor
-description: "The health and observability surface of the AIOS, for both the client and Adir. Reads System/health/status.md and the latest System/logs, then actively probes each component live: gws auth (auth status + a real Drive list call), wacli (wacli doctor), and the last-run plus last-status of each scheduled routine like morning-report. Prints one plain-Hebrew status table with ✅ תקין / ⚠️ שים לב / ❌ תקול per component, the deciding detail, and exactly what to do to fix anything broken. Then refreshes System/health/status.md with the live findings and appends a run-log line. Use when the user says 'בדיקה', 'דוקטור', 'מה מצב המערכת', 'בדוק את המערכת', 'הכל עובד?', 'doctor', 'health check', or runs /doctor."
+description: "The health and observability surface of the AIOS, for both the client and Adir. Reads System/health/status.md and the latest System/logs, then actively probes each component live: gws auth (auth status + a real Drive list call), wacli (wacli doctor), and the last-run plus last-status of each scheduled routine like morning-report. Prints one Hebrew status table with ✅ תקין / ⚠️ שים לב / ❌ תקול per component, the deciding detail, and exactly what to do to fix anything broken. Then refreshes System/health/status.md with the live findings and appends a run-log line. Use when the user says 'בדיקה', 'דוקטור', 'מה מצב המערכת', 'בדוק את המערכת', 'הכל עובד?', 'doctor', 'health check', 'system status', or runs /doctor."
 ---
 
-# בדיקת מערכת (Doctor)
+# Doctor (system health check)
 
-> [!note] צילום מצב חי של כל המערכת: מה מחובר, מה רץ, ומה נתקע. בודק כל רכיב בפועל (לא רק קורא מה כתוב), מציג טבלה אחת בעברית עם תקין / שים לב / תקול לכל רכיב, ולכל בעיה אומר בדיוק מה לעשות. בסוף מרענן את `System/health/status.md`.
+> [!note] A live snapshot of the whole system: what is connected, what is running, what is stuck. It checks every component for real (not just reading what is written), shows one Hebrew table with OK / heads-up / broken per component, and for every problem says exactly what to do. At the end it refreshes `System/health/status.md`.
 
-זה לוח המחוונים של המערכת, גם בשבילך וגם בשביל אדיר. כש`/audit` שואל "כמה המערכת בנויה", `/doctor` שואל "האם מה שבנוי עובד עכשיו". הוא לא מאמין למה שכתוב: הוא בודק חי. קורא קודם את מה שמתועד ב-`System/health/status.md` ובלוגים, ואז ממש מריץ בדיקה לכל רכיב ומשווה.
+> [!important] Language: these instructions are in English; the user is Hebrew-speaking. Run the checks in English, but write everything the user sees in Hebrew: the status table, the summary line, the run-log. Status tokens stay as ✅ תקין / ⚠️ שים לב / ❌ תקול. Keep commands, file paths, and field names as they are.
 
-המבנה: שלב 1 קורא את התיעוד, שלב 2 בודק כל רכיב בפועל, שלב 3 מציג טבלה אחת, שלב 4 מרענן את הסטטוס.
+This is the system dashboard, for you and for Adir. Where `/audit` asks "how much of the system is built", `/doctor` asks "is what is built working right now". It does not trust what is written: it checks live. First it reads what is documented in `System/health/status.md` and the logs, then it actually runs a check on each component and compares.
 
-## שלב 1: קריאת התיעוד
+The structure: step 1 reads the documentation, step 2 checks each component for real, step 3 shows one table, step 4 refreshes the status.
 
-קרא את מה שהמערכת חושבת על עצמה כרגע. אל תקרא קבצים שלמים אם אפשר לסרוק.
+## Step 1: Read the documentation
+
+Read what the system currently thinks about itself. Do not read whole files if you can scan.
 
 ```bash
 echo "===== status.md ====="
-cat System/health/status.md 2>/dev/null || echo "אין status.md עדיין. כנראה לא רץ /connect או /onboard."
+cat System/health/status.md 2>/dev/null || echo "No status.md yet. /connect or /onboard probably has not run."
 
-echo "===== הלוג האחרון ====="
+echo "===== latest log ====="
 LAST_LOG=$(ls -t System/logs/*.md 2>/dev/null | head -1)
 if [ -n "$LAST_LOG" ]; then
-  echo "קובץ: $LAST_LOG"
+  echo "file: $LAST_LOG"
   tail -15 "$LAST_LOG"
 else
-  echo "אין לוגים עדיין. אף שגרה לא רצה."
+  echo "No logs yet. No routine has run."
 fi
 ```
 
-מתוך זה חלץ: אילו חיבורים אמורים להיות פעילים, ומתי רצה כל שגרה לאחרונה ומה היה הסטטוס שלה. זו נקודת הייחוס. עכשיו נבדוק מול המציאות.
+From this extract: which connections are supposed to be active, and when each routine last ran and what its status was. That is the reference point. Now check against reality.
 
-אם אין בכלל `status.md` ולא לוגים, זה ממצא בפני עצמו: המערכת עוד לא חוברה. דלג לטבלה (שלב 3) עם הכל `❌ תקול`, והמלצה אחת: להריץ `/connect`.
+If there is no `status.md` and no logs at all, that is a finding in itself: the system has not been connected yet. Skip to the table (step 3) with everything `❌ תקול`, and one recommendation: run `/connect`.
 
-## שלב 2: בדיקה חיה של כל רכיב
+## Step 2: Live check of each component
 
-עכשיו בודקים בפועל. כל בדיקה היא פקודה אמיתית, והתוצאה קובעת את הסטטוס. אל תסתמך על `status.md`, הוא רק מה שהיה. הפקודה היא מה שיש.
+Now check for real. Each check is a real command, and the result sets the status. Do not rely on `status.md`, it is only what was. The command is what is.
 
-### 2.1: גוגל (gws): ג'ימייל, דרייב, יומן
+### 2.1: Google (gws): Gmail, Drive, Calendar
 
-קודם זהות, אחר כך קריאה אמיתית.
+Identity first, then a real read.
 
 ```bash
 echo "--- gws auth status ---"
 gws auth status 2>&1 | head -10
 
-echo "--- בדיקת דרייב חיה ---"
+echo "--- live Drive check ---"
 gws drive files list --params '{"pageSize": 1}' --format json 2>&1 | head -10
 ```
 
-החלטה:
-- ההרשאה פעילה **וגם** קריאת הדרייב חזרה בלי שגיאה: **✅ תקין**.
-- ההרשאה פעילה אבל קריאת הדרייב נכשלה על שירות מושבת (`SERVICE_DISABLED` / `API not enabled`): **⚠️ שים לב**. הזהות בסדר, אבל שירות מסוים לא הופעל. הפרט המכריע: איזה שירות. התיקון: להפעיל אותו (ראה `/connect` שלב 1.4).
-- `gws auth status` מראה לא מחובר, או הקריאה חזרה עם שגיאת הרשאה (401/403/`invalid_grant`): **❌ תקול**. צריך להתחבר מחדש. התיקון: `/connect` שלב 1 (או `gws auth login` אם רק פג התוקף).
+Decision:
+- Auth active **and** the Drive read came back without error: **✅ תקין**.
+- Auth active but the Drive read failed on a disabled service (`SERVICE_DISABLED` / `API not enabled`): **⚠️ שים לב**. Identity is fine, but a specific service is not enabled. Deciding detail: which service. Fix: enable it (see `/connect` step 1.4).
+- `gws auth status` shows not connected, or the read returned a permission error (401/403/`invalid_grant`): **❌ תקול**. Needs re-auth. Fix: `/connect` step 1 (or `gws auth login` if the token just expired).
 
-הערה: ג'ימייל, דרייב ויומן חולקים את אותה זהות gws. אם הזהות תקולה, שלושתם תקולים. אם הזהות תקינה אבל רק שירות אחד לא הופעל, סמן רק אותו כ-`⚠️`.
+Note: Gmail, Drive, and Calendar share the same gws identity. If the identity is broken, all three are broken. If the identity is fine but only one service is not enabled, mark only that one as `⚠️`.
 
-### 2.2: וואטסאפ (wacli)
+### 2.2: WhatsApp (wacli)
 
 ```bash
 echo "--- wacli doctor ---"
 wacli doctor 2>&1 | head -20
 ```
 
-החלטה:
-- אחסון (store) תקין, אימות (auth) פעיל, וחיפוש עובד: **✅ תקין**.
-- מחובר אבל יש אזהרה (למשל סנכרון מפגר, או חיפוש לא מאונדקס): **⚠️ שים לב**. הפרט המכריע: מה ש-doctor סימן. התיקון בדרך כלל: לחכות לסנכרון או להריץ `wacli auth --follow` רגע.
-- לא מאומת / האחסון שבור / `wacli doctor` נכשל: **❌ תקול**. התיקון: `/connect` שלב 2 (התחברות מחדש עם QR).
+Decision:
+- Store healthy, auth active, and search works: **✅ תקין**.
+- Connected but with a warning (e.g. sync lagging, or search not indexed): **⚠️ שים לב**. Deciding detail: what doctor flagged. Fix is usually: wait for sync or run `wacli auth --follow` for a moment.
+- Not authenticated / store broken / `wacli doctor` failed: **❌ תקול**. Fix: `/connect` step 2 (re-connect with QR).
 
-> [!tip] השדה `connected` של `wacli doctor` לא תמיד אמין בזמן שסנכרון מחזיק את הנעילה. אם הוא מראה לא-מחובר אבל האימות פעיל והאחסון מתקדם, זה כנראה רק הנעילה. סמן `⚠️` ולא `❌`, וציין שכדאי לבדוק שוב בעוד דקה.
+> [!tip] The `connected` field of `wacli doctor` is not always reliable while sync holds the lock. If it shows not-connected but auth is active and the store is progressing, that is probably just the lock. Mark `⚠️` not `❌`, and note it is worth checking again in a minute.
 
-### 2.3: מקור נתונים (מפתח API), אם הוגדר
+### 2.3: Data source (API key), if configured
 
-בדוק רק אם ב-`.env` יש מפתח של מקור נתונים (למשל `GOVMAP_API_KEY`). אם אין, דלג, זה לא תקלה.
+Check only if `.env` has a data-source key (e.g. `GOVMAP_API_KEY`). If not, skip, it is not a fault.
 
 ```bash
 if [ -f .env ] && grep -q '^GOVMAP_API_KEY=' .env 2>/dev/null; then
   set -a; . ./.env; set +a
   if [ -z "$GOVMAP_API_KEY" ] || [ "$GOVMAP_API_KEY" = "PASTE_KEY_HERE" ]; then
-    echo "מפתח מקור נתונים מוגדר אך ריק או לא הודבק. ❌"
+    echo "Data-source key is set but empty or not pasted. BROKEN"
   else
-    echo "מפתח מקור נתונים נטען (${#GOVMAP_API_KEY} תווים). ✅ נבדוק מול השירות אם יש כתובת בדיקה."
-    # אם ידועה כתובת בדיקה לשירות, הרץ אותה כאן וקבע לפי קוד התשובה:
+    echo "Data-source key loaded (${#GOVMAP_API_KEY} chars). OK, will probe the service if there is a health endpoint."
+    # If a service health endpoint is known, run it here and decide by the response code:
     # curl -s -o /dev/null -w '%{http_code}\n' -H "Authorization: Bearer $GOVMAP_API_KEY" "https://API_BASE/health"
   fi
 else
-  echo "אין מקור נתונים מוגדר. מדלגים (לא תקלה)."
+  echo "No data source configured. Skipping (not a fault)."
 fi
 ```
 
-החלטה: מפתח נטען (ובדיקת השירות עברה, אם יש כזו) = **✅ תקין**. מפתח חסר/ריק = **❌ תקול**. בדיקת שירות שחזרה 401/403 = **⚠️ שים לב** (מפתח כנראה פג).
+Decision: key loaded (and the service probe passed, if any) = **✅ תקין**. Key missing/empty = **❌ תקול**. A service probe that returned 401/403 = **⚠️ שים לב** (key probably expired).
 
-### 2.4: שגרות (morning-report ועוד)
+### 2.4: Routines (morning-report and others)
 
-השגרות לא נבדקות בהרצה (לא מריצים אותן), אלא לפי הריצה האחרונה שלהן בלוגים ובסטטוס. השאלה: מתי רצה לאחרונה, ומה היה הסטטוס.
+Routines are not checked by running them (do not run them), but by their last run in the logs and status. The question: when did it last run, and what was the status.
 
 ```bash
-echo "--- ריצות אחרונות של שגרות (7 ימים) ---"
+echo "--- recent routine runs (7 days) ---"
 ls -t System/logs/*.md 2>/dev/null | head -7 | while read f; do
   grep -E 'morning-report|supervisor' "$f" 2>/dev/null
 done | tail -10
-echo "--- היום ---"; date +%F
+echo "--- today ---"; date +%F
 ```
 
-החלטה לכל שגרה (למשל `morning-report`):
-- רצה היום או אתמול עם ✅ הצליח: **✅ תקין**.
-- רצה אבל הסטטוס האחרון ⚠️ חלקי או ❌ נכשל: **⚠️ שים לב** או **❌ תקול** בהתאם. הפרט המכריע: השורה מהלוג (מה נכשל). התיקון: להריץ אותה ידנית פעם אחת ולראות מה שובר.
-- לא רצה כבר יותר משבוע, או אין לה אף ריצה בלוגים: **⚠️ שים לב** (תקועה או לא מתוזמנת). התיקון: לוודא שהיא מתוזמנת ושהמחשב היה דלוק בזמן, ולהריץ אותה ידנית פעם אחת.
+Decision per routine (e.g. `morning-report`):
+- Ran today or yesterday with ✅ success: **✅ תקין**.
+- Ran but the last status was ⚠️ partial or ❌ failed: **⚠️ שים לב** or **❌ תקול** accordingly. Deciding detail: the line from the log (what failed). Fix: run it manually once and see what breaks.
+- Has not run in more than a week, or has no run in the logs at all: **⚠️ שים לב** (stuck or not scheduled). Fix: confirm it is scheduled and the computer was awake at the time, and run it manually once.
 
-> [!important] שגרות רצות רק כשהמחשב והטרמינל דלוקים בזמן המתוזמן. אם שגרה "לא רצה", הסיבה הכי נפוצה היא שהמחשב היה כבוי, לא שהיא שבורה. ציין את זה כשרלוונטי.
+> [!important] Routines run only when the computer and terminal are on at the scheduled time. If a routine "did not run", the most common reason is that the computer was off, not that it is broken. Note this when relevant.
 
-## שלב 3: טבלת הסטטוס
+## Step 3: The status table
 
-הצג בצ'אט טבלה אחת ברורה בעברית. לכל רכיב: סטטוס, הפרט שהכריע, ומה לעשות. שלוש הרמות: **✅ תקין** (עובד), **⚠️ שים לב** (עובד חלקית או צריך תשומת לב), **❌ תקול** (לא עובד, צריך טיפול). שורה שתקינה: בעמודת "מה לעשות" כתוב "כלום, תקין".
+Show one clear table in the chat, in Hebrew. Per component: status, the deciding detail, and what to do. Three levels: **✅ תקין** (working), **⚠️ שים לב** (working partially or needs attention), **❌ תקול** (not working, needs handling). For a healthy row, the "what to do" column says "כלום, תקין".
+
+Render this table to the user in Hebrew (translate the column headers; keep the status tokens as they are):
 
 ```markdown
-## מצב המערכת ({תאריך} {שעה})
+## מצב המערכת ({date} {time})
 
 | רכיב | מצב | הפרט שהכריע | מה לעשות |
 | --- | --- | --- | --- |
-| ג'ימייל (gws) | {✅/⚠️/❌} | {הפרט} | {פעולה או "כלום, תקין"} |
-| דרייב (gws) | {✅/⚠️/❌} | {הפרט} | {...} |
-| יומן (gws) | {✅/⚠️/❌} | {הפרט} | {...} |
-| וואטסאפ (wacli) | {✅/⚠️/❌} | {הפרט} | {...} |
-| מקור נתונים (API) | {✅/⚠️/❌/–} | {הפרט} | {...} |
-| morning-report | {✅/⚠️/❌} | {ריצה אחרונה + סטטוס} | {...} |
+| ג'ימייל (gws) | {✅/⚠️/❌} | {detail} | {action or "כלום, תקין"} |
+| דרייב (gws) | {✅/⚠️/❌} | {detail} | {...} |
+| יומן (gws) | {✅/⚠️/❌} | {detail} | {...} |
+| וואטסאפ (wacli) | {✅/⚠️/❌} | {detail} | {...} |
+| מקור נתונים (API) | {✅/⚠️/❌/–} | {detail} | {...} |
+| morning-report | {✅/⚠️/❌} | {last run + status} | {...} |
 ```
 
-מתחת לטבלה, שורת סיכום אחת בשפה אנושית. ספציפי, לא כללי:
-- אם הכל ✅: "הכל עובד. המערכת מחוברת והשגרה רצה. אין מה לעשות."
-- אם יש בעיות: שורה אחת על הבעיה הכי דחופה והצעד הבא. למשל: "הכל תקין חוץ מוואטסאפ, שהתנתק. הרץ `/connect` ושלב 2 כדי לחבר מחדש בסריקת QR."
+Below the table, one summary line in human Hebrew. Specific, not generic:
+- If all ✅: "הכל עובד. המערכת מחוברת והשגרה רצה. אין מה לעשות."
+- If there are problems: one line on the most urgent problem and the next step. For example: "הכל תקין חוץ מוואטסאפ, שהתנתק. הרץ `/connect` ושלב 2 כדי לחבר מחדש בסריקת QR."
 
-קול אנושי, מרגיע, לא מאיים. גם ❌ נאמר ברוגע: "X לא מחובר כרגע, זה תיקון של דקה."
+A human, reassuring voice, not alarming. Even ❌ is said calmly: "X לא מחובר כרגע, זה תיקון של דקה."
 
-## שלב 4: רענון status.md ורישום
+## Step 4: Refresh status.md and log
 
-עדכן את `System/health/status.md` כדי שישקף את מה שנמצא עכשיו. זה שומר את לוח המחוונים מסונכרן עם המציאות, כך שהקריאה הבאה (וגם `/audit`) תראה אמת.
+Update `System/health/status.md` to reflect what was found now. This keeps the dashboard in sync with reality, so the next read (and `/audit`) sees the truth.
 
-ערוך את `System/health/status.md`: לכל חיבור, עדכן את עמודת **מצב** לפי הבדיקה החיה (✅ מחובר / ⚠️ שים לב / ❌ תקול) ואת **עודכן** לזמן עכשיו. לכל שגרה, עדכן ריצה אחרונה ומצב אחרון. אם הקובץ לא קיים בכלל, צור אותו עם השלד הזה ואז מלא:
+Edit `System/health/status.md`: for each connection, update the **state** column from the live check (✅ מחובר / ⚠️ שים לב / ❌ תקול) and **updated** to now. For each routine, update last run and last state. If the file does not exist at all, create it with this skeleton (English structure, Hebrew display values) and then fill:
 
 ```bash
 mkdir -p System/health System/logs
@@ -151,7 +155,7 @@ tags: [health, status, connections]
 
 > [!note] מצב המערכת: מה מחובר ומה רץ. מתעדכן בכל `/connect` ובכל `/doctor`.
 
-## חיבורים
+## Connections
 
 | מערכת | מצב | עודכן |
 | --- | --- | --- |
@@ -161,7 +165,7 @@ tags: [health, status, connections]
 | וואטסאפ (wacli) | ⬜ לא מחובר | - |
 | מקור נתונים (API) | ⬜ לא מחובר | - |
 
-## שגרות
+## Routines
 
 | שגרה | ריצה אחרונה | מצב אחרון | תזמון |
 | --- | --- | --- | --- |
@@ -170,7 +174,7 @@ EOF
 fi
 ```
 
-הוסף שורת לוג לריצה הזו:
+Append a log line for this run:
 
 ```bash
 DATE=$(date +%F); TIME=$(date +%H:%M); mkdir -p System/logs
@@ -178,25 +182,26 @@ printf -- '- %s | doctor | %s | %s | משך: %ss\n' \
   "$TIME" "$RESULT" "$SUMMARY" "$DUR" >> "System/logs/$DATE.md"
 ```
 
-(`$RESULT` = ✅ הצליח אם הכל תקין, ⚠️ חלקי אם יש בעיות אך הבדיקה רצה, ❌ נכשל אם הבדיקה עצמה לא יכלה לרוץ. `$SUMMARY` = שורה אחת, למשל "הכל תקין" או "וואטסאפ מנותק, gws תקין". `$DUR` = משך בשניות.)
+(`$RESULT` = ✅ הצליח if everything is fine, ⚠️ חלקי if there are problems but the check ran, ❌ נכשל if the check itself could not run. `$SUMMARY` = one line, e.g. "הכל תקין" or "וואטסאפ מנותק, gws תקין". `$DUR` = duration in seconds.)
 
-## חוקים
+## Rules
 
-1. בדוק חי, אל תאמין ל-`status.md`. הוא נקודת ייחוס בלבד. הפקודה (gws, wacli) קובעת את הסטטוס.
-2. כל רכיב מקבל אחת משלוש: ✅ תקין, ⚠️ שים לב, ❌ תקול. לכל אחד הפרט שהכריע ומה לעשות.
-3. לרכיב תקין, "מה לעשות" הוא "כלום, תקין". אל תמציא בעיות.
-4. שגרות נמדדות לפי הריצה האחרונה בלוגים (לא מריצים אותן). שגרה שלא רצה שבוע = `⚠️`, לא כישלון ודאי. זכור שהמחשב צריך להיות דלוק בזמן.
-5. אחרי הבדיקה, רענן את `System/health/status.md` למצב החי, והוסף שורת לוג ל-`System/logs/`.
-6. קול מרגיע ואנושי. גם ❌ נאמר ברוגע, עם הצעד הבא. בלי להפחיד.
-7. אם אין `status.md` ולא לוגים: המערכת לא חוברה. המלץ `/connect`, אל תתייחס לזה כתקלה.
-8. אל תדביק את כל פלט הבדיקות הגולמי בצ'אט. רק הטבלה והסיכום.
-9. לעולם אל תכתוב ערך של מפתח API לצ'אט או לקובץ כספת. בדוק שהוא נטען, לא מה הוא.
-10. לעולם אל תשתמש במקף ארוך (—). פסיק, נקודה, נקודתיים, או פצל למשפטים.
+1. Check live, do not trust `status.md`. It is only a reference point. The command (gws, wacli) sets the status.
+2. Every component gets one of three: ✅ תקין, ⚠️ שים לב, ❌ תקול. Each with the deciding detail and what to do.
+3. For a healthy component, "what to do" is "כלום, תקין". Do not invent problems.
+4. Routines are measured by their last run in the logs (do not run them). A routine that has not run for a week = `⚠️`, not a certain failure. Remember the computer needs to be on at the time.
+5. After the check, refresh `System/health/status.md` to the live state, and append a log line to `System/logs/`.
+6. A reassuring, human voice. Even ❌ is said calmly, with the next step. Without scaring.
+7. If there is no `status.md` and no logs: the system is not connected. Recommend `/connect`, do not treat it as a fault.
+8. Do not paste all the raw check output into the chat. Only the table and the summary.
+9. Never write an API key value to the chat or a vault file. Check that it loaded, not what it is.
+10. Never use an em dash. Comma, period, colon, or split into sentences.
+11. Everything the user reads is in Hebrew: the table, the summary, the recommendation.
 
-## פתרון תקלות
+## Troubleshooting
 
-- **`gws auth status` תקין אבל קריאת הדרייב נכשלת**: כמעט תמיד שירות לא הופעל בפרויקט. זה `⚠️` (לא `❌`): הזהות בסדר. הפנה ל-`/connect` שלב 1.4 להפעלת ג'ימייל/דרייב/יומן.
-- **`gws` מחזיר `invalid_grant` או דורש התחברות**: התוקף פג או הסשן בוטל. `❌`. התיקון המהיר: `gws auth login`. אם לא עוזר, `/connect` שלב 1 מהתחלה.
-- **`wacli doctor` תקוע או איטי**: סנכרון כנראה מחזיק את הנעילה. אל תקבע `❌` מיד. סמן `⚠️`, ציין שכדאי לבדוק שוב בעוד דקה, ואם נשאר תקוע הרץ `wacli auth --follow` רגע ואז `wacli doctor` שוב.
-- **שגרה בלי אף ריצה בלוגים**: ייתכן שמעולם לא תוזמנה, או שתוזמנה אך המחשב היה כבוי בזמן. `⚠️`. ודא שהיא מתוזמנת, הרץ אותה ידנית פעם אחת, וראה שנכתבת שורת לוג.
-- **כל הבדיקות נכשלות יחד**: ייתכן שהפקודות `gws`/`wacli` לא מותקנות בכלל, או שאתה לא בתיקיית הכספת. ודא שאתה בשורש הכספת (יש בה `System/` ו-`Context/`), ושאדיר התקין את הכלים. זה כישלון בדיקה (`❌ נכשל` בלוג), לא תקלה של רכיב בודד.
+- **`gws auth status` is fine but the Drive read fails**: almost always a service not enabled in the project. That is `⚠️` (not `❌`): identity is fine. Point to `/connect` step 1.4 to enable Gmail/Drive/Calendar.
+- **`gws` returns `invalid_grant` or demands login**: the token expired or the session was revoked. `❌`. Quick fix: `gws auth login`. If that does not help, `/connect` step 1 from the start.
+- **`wacli doctor` is stuck or slow**: sync is probably holding the lock. Do not declare `❌` right away. Mark `⚠️`, note it is worth re-checking in a minute, and if it stays stuck run `wacli auth --follow` for a moment then `wacli doctor` again.
+- **A routine with no run in the logs**: it may never have been scheduled, or it was scheduled but the computer was off at the time. `⚠️`. Confirm it is scheduled, run it manually once, and see that a log line is written.
+- **All checks fail together**: the `gws`/`wacli` commands may not be installed at all, or you are not in the vault directory. Confirm you are at the vault root (it has `System/` and `Context/`), and that Adir installed the tools. That is a check failure (`❌ נכשל` in the log), not a single-component fault.

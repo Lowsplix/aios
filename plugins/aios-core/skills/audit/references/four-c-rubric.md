@@ -5,60 +5,62 @@ status: active
 tags: [audit, rubric, 4c]
 ---
 
-> [!note] איך לתת ציון לכל אחד מארבעת ה-C. לכל C מוגדר מה זה, ואיך נראה ציון 0, 50, ו-100. בין הנקודות, אמוד לפי שיקול דעת.
+> [!note] How to score each of the four C's. For each C, the definition is given, plus what a score of 0, 50, and 100 looks like. Between those points, judge by your own assessment.
 
-ארבעת ה-C הם עמוד השדרה של הביקורת והשדרוג. הם מודדים כמה מהעסק באמת חי בתוך המערכת, ולא רק בראש של בעל העסק.
+> [!important] Language: these instructions are in English; the user is Hebrew-speaking. Reason and run the steps in English, but write everything the user sees in Hebrew: chat replies, reports, vault notes, tables, status lines, task text. Keep commands, file paths, field names, dates, and numbers as they are.
 
-## הקשר (Context)
+The four C's are the backbone of the audit and the upgrade. They measure how much of the business actually lives inside the system, and not just in the owner's head.
 
-**מה זה:** כמה מהעסק מתועד ב-`Context/` ובכספת. זה הזיכרון שכל סשן וכל שגרה קוראים קודם. בלי הקשר, העוזר עובד באוויר.
+## Context
 
-מודדים מול 8 קבצי הליבה: `me.md`, `business.md`, `services.md`, `icp.md`, `brand.md`, `strategy.md`, `infrastructure.md`, `pain-points.md`. קובץ נחשב מלא רק אם יש בו תוכן אמיתי, לא תבנית עם `[סוגריים ריקים]`.
+**What it is:** how much of the business is documented in `Context/` and the vault. This is the memory that every session and every routine reads first. Without context, the assistant works blind.
 
-| ציון | איך זה נראה |
+Measured against the 8 core files: `me.md`, `business.md`, `services.md`, `icp.md`, `brand.md`, `strategy.md`, `infrastructure.md`, `pain-points.md`. A file counts as filled only if it has real content, not a template with `[empty brackets]`.
+
+| Score | What it looks like |
 | --- | --- |
-| 0 | אין תיקיית `Context/`, או כל הקבצים ריקים או תבנית בלבד. |
-| 50 | כ-4 מתוך 8 קבצים מלאים בתוכן אמיתי. הבסיס קיים, אבל ICP, מותג, או אסטרטגיה חסרים. |
-| 100 | כל 8 הקבצים מלאים, ספציפיים, ומעודכנים. שגרה יכולה לרוץ בלי לשאול שאלות בסיס. |
+| 0 | No `Context/` folder, or every file is empty or template only. |
+| 50 | About 4 of 8 files filled with real content. The base exists, but ICP, brand, or strategy are missing. |
+| 100 | All 8 files filled, specific, and up to date. A routine can run without asking baseline questions. |
 
-נקודות שמורידות: קבצים שהם רק תבנית, מידע ישן (אסטרטגיה של אשתקד), או `me.md` כללי בלי סגנון עבודה וכאבים.
+What drags the score down: files that are only a template, stale information (last year's strategy), or a generic `me.md` with no work style and no pain points.
 
-## חיבורים (Connections)
+## Connections
 
-**מה זה:** אילו מערכות חיצוניות מחוברות בפועל ויכולות לפעול: Gmail, Drive, Calendar, WhatsApp, ומקורות נתונים נוספים (CRM, אנליטיקס, חשבון פרסום). חיבור נחשב רק עם עדות: סטטוס "מחובר" ב-`System/health/status.md`, או ריצה מוצלחת אחרונה. כוונה לחבר אינה חיבור.
+**What it is:** which external systems are actually connected and able to operate: Gmail, Drive, Calendar, WhatsApp, and additional data sources (CRM, analytics, ad account). A connection counts only with evidence: a "connected" status in `System/health/status.md`, or a recent successful run. An intention to connect is not a connection.
 
-| ציון | איך זה נראה |
+| Score | What it looks like |
 | --- | --- |
-| 0 | שום מערכת לא מחוברת. המערכת לא יכולה לקרוא מייל, יומן, או הודעות. |
-| 50 | חיבור אחד או שניים עובדים (למשל Gmail), אבל מקורות מרכזיים חסרים (אין WhatsApp, אין מקור נתונים של העסק). |
-| 100 | כל המערכות שהעסק צריך מחוברות ופעילות, עם עדות לריצה מוצלחת אחרונה. |
+| 0 | No system is connected. The system cannot read mail, calendar, or messages. |
+| 50 | One or two connections work (for example Gmail), but central sources are missing (no WhatsApp, no business data source). |
+| 100 | Every system the business needs is connected and active, with evidence of a recent successful run. |
 
-נקודות שמורידות: חיבור שמופיע כ"מוגדר" אבל נכשל בריצה אחרונה, או אסימון שפג תוקף.
+What drags the score down: a connection that shows as "configured" but failed on its last run, or an expired token.
 
-## יכולות (Capabilities)
+## Capabilities
 
-**מה זה:** אילו מיומנויות (`Skills/`) ותתי-סוכנים (`.claude/agents/`) קיימים ותקינים. אלו הפעולות שהמערכת יודעת לבצע מעבר לשיחה: דוח בוקר, מיון מייל, הכנת הצעת מחיר, וכו'. מיומנות נחשבת רק עם `SKILL.md` תקין.
+**What it is:** which skills (`Skills/`) and subagents (`.claude/agents/`) exist and are healthy. These are the actions the system can perform beyond conversation: a morning report, mail triage, preparing a price proposal, and so on. A skill counts only with a valid `SKILL.md`.
 
-| ציון | איך זה נראה |
+| Score | What it looks like |
 | --- | --- |
-| 0 | אין מיומנויות מותאמות. המערכת רק עונה בצ'אט, לא מבצעת. |
-| 50 | יש 1 עד 2 מיומנויות שעובדות, אבל פעולות חוזרות מרכזיות עדיין נעשות ידנית. |
-| 100 | מיומנות לכל תהליך חוזר משמעותי בעסק, כל אחת עם `SKILL.md` ברור וטריגר. |
+| 0 | No customized skills. The system only answers in chat, it does not act. |
+| 50 | There are 1 to 2 skills that work, but central recurring actions are still done manually. |
+| 100 | A skill for every meaningful recurring process in the business, each with a clear `SKILL.md` and trigger. |
 
-נקודות שמורידות: מיומנות בלי `SKILL.md`, מיומנות שמשכפלת אחת אחרת, או מיומנות שאף פעם לא רצה.
+What drags the score down: a skill with no `SKILL.md`, a skill that duplicates another, or a skill that has never run.
 
-## קצב (Cadence)
+## Cadence
 
-**מה זה:** אילו שגרות רצות לבד על לוח זמנים, ומתי רצו לאחרונה. זה ההבדל בין כלי שמחכים שיקראו לו, לבין מערכת שדוחפת תוצאות. נמדד לפי `System/logs/` ו-`System/health/status.md`. שגרה שלא רצה שבוע נחשבת תקועה.
+**What it is:** which routines run on their own on a schedule, and when they last ran. This is the difference between tools that wait to be called, and a system that pushes results. Measured by `System/logs/` and `System/health/status.md`. A routine that has not run for a week counts as stuck.
 
-| ציון | איך זה נראה |
+| Score | What it looks like |
 | --- | --- |
-| 0 | שום דבר לא רץ לבד. כל פעולה דורשת שמישהו יתחיל אותה. |
-| 50 | שגרה אחת מתוזמנת ורצה (למשל דוח בוקר), אבל היא לבד והשאר ידני. |
-| 100 | מספר שגרות רצות לפי לוח זמנים, כולן רצו לאחרונה בהצלחה, ויש פיקוח שמתריע כשמשהו נשבר. |
+| 0 | Nothing runs on its own. Every action requires someone to start it. |
+| 50 | One routine is scheduled and running (for example a morning report), but it is alone and the rest is manual. |
+| 100 | Several routines run on a schedule, all of them ran recently and successfully, and there is supervision that alerts when something breaks. |
 
-נקודות שמורידות: שגרה מתוזמנת שלא רצה שבוע (תקועה), או שגרה בלי רישום ריצה (אי אפשר לדעת אם עבדה).
+What drags the score down: a scheduled routine that has not run for a week (stuck), or a routine with no run record (no way to know if it worked).
 
-## הערה על תזמון
+## A note on scheduling
 
-הקצב תלוי במחשב שדולק בזמן הנכון. התכנון הוא דחיפת תוצאות בשעות העבודה של בעל העסק, לא שרת 24/7. שגרה ש"מתוזמנת" אבל המחשב כבוי בזמן שלה לא תרוץ. זה שיקול אמיתי בציון הקצב.
+Cadence depends on the computer being on at the right time. The design is to push results during the owner's working hours, not a 24/7 server. A routine that is "scheduled" but the computer is off at its time will not run. That is a real consideration in the cadence score.

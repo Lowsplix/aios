@@ -3,71 +3,73 @@ name: morning-report
 description: "Composes a concise Hebrew morning brief for a solo business owner by reading the latest Daily/ note, open tasks in task-list/Tasks.md, flagged items in active Projects/, leads, and System/health/status.md. Produces five Hebrew sections (new opportunities, decisions to make, today's tasks, leads, one system-health line), writes the brief to today's Daily/YYYY-MM-DD.md, optionally sends it to the owner over WhatsApp via wacli (after a wacli doctor liveness check), appends a run-log line to System/logs/YYYY-MM-DD.md and updates System/health/status.md. Designed to be scheduled around 07:00 (machine must be on). Use when the user says 'דוח בוקר', 'בוקר', 'מה יש לי היום', 'סיכום בוקר', 'morning report', 'morning brief', or runs /morning-report."
 ---
 
-# דוח בוקר
+# Morning report
 
-> [!note] מרכיב לך בריף בוקר קצר בעברית מתוך מה שכבר חי בכספת: הערת היום האחרונה, המשימות הפתוחות, מה שמסומן בפרויקטים, לידים חדשים, ושורת בריאות אחת. כותב אותו להערת היום, ואם תרצה גם שולח לך בוואטסאפ.
+> [!note] Composes a short Hebrew morning brief from what already lives in the vault: the latest daily note, open tasks, what is flagged in projects, new leads, and one health line. It writes it to today's note, and if you want, also sends it to you over WhatsApp.
 
-הדוח לא ממציא כלום. הוא קורא את מה שכבר רשום בכספת ומגיש לך אותו מסונן ל-5 דברים שחשובים הבוקר: הזדמנויות חדשות, החלטות שמחכות לך, מה לעשות היום, לידים, ובריאות המערכת בשורה אחת. המטרה: שתפתח את היום עם תמונה אחת ברורה, בלי לחפש.
+> [!important] Language: these instructions are in English; the user is Hebrew-speaking. Reason and run the steps in English, but write everything the user sees in Hebrew: chat replies, reports, vault notes, tables, status lines, task text. Keep commands, file paths, field names, dates, and numbers as they are.
 
-זה שלבים. רוץ אותם לפי הסדר. דבר עברית, קצר ועובדתי. ספציפי, לא כללי.
+The report invents nothing. It reads what is already written in the vault and serves it to you filtered down to the 5 things that matter this morning: new opportunities, decisions waiting for you, what to do today, leads, and system health in one line. The goal: that you open the day with one clear picture, without searching.
 
-## שלב 1: איסוף הראיות
+This is steps. Run them in order. Speak Hebrew, short and factual. Specific, not generic.
 
-אסוף את מה שצריך כדי להרכיב את הבריף. אל תקרא קבצים שלמים אם אפשר לסרוק. השתמש ב-`ls`, `grep`, ו-`Read` רק על הקובץ הרלוונטי.
+## Step 1: Gather the evidence
+
+Gather what you need to compose the brief. Do not read whole files if you can scan. Use `ls`, `grep`, and `Read` only on the relevant file.
 
 ```bash
 DATE=$(date +%F)
 
-# הערת היום האחרונה (ההקשר העדכני)
+# the latest daily note (the current context)
 ls -t Daily/*.md 2>/dev/null | head -1
 
-# משימות פתוחות
+# open tasks
 grep -nE '^\s*-\s*\[ \]' task-list/Tasks.md 2>/dev/null
 
-# מה שמסומן בפרויקטים פעילים: דדליין, חסום, ממתין להחלטה
+# what is flagged in active projects: deadline, blocked, awaiting a decision
 grep -rniE 'דדליין|חסום|תקוע|ממתין|להחליט|החלטה|בלוקר|blocker' Projects/ 2>/dev/null
 
-# לידים: קבצים או רשומות שמסומנות כליד חדש
+# leads: files or records marked as a new lead
 grep -rniE 'ליד|leads?|פנייה חדשה|לקוח פוטנציאלי' Projects/ Intelligence/ 2>/dev/null | head -20
 
-# בריאות המערכת: שורה אחת
+# system health: one line
 cat System/health/status.md 2>/dev/null
 ```
 
-מה לחלץ מכל מקור:
-- **הערת היום האחרונה ב-`Daily/`**: מה היה אתמול, מה נשאר פתוח, מה נקבע להיום. זה ההקשר שממנו נבנה הבוקר.
-- **`task-list/Tasks.md`**: כל המשימות הפתוחות (`- [ ]`). סמן את אלו עם דדליין היום או שעבר, ואת אלו עם עדיפות גבוהה.
-- **`Projects/`**: כל פרויקט פעיל שמסומן בו דדליין קרוב, חסם, או משהו שממתין להחלטה שלך. אלו מזינים את "החלטות שצריך לקבל".
-- **לידים**: פניות חדשות או לקוחות פוטנציאליים שנכנסו ועדיין לא טופלו. אם אין מקור לידים מסודר בכספת, השאר את הסעיף קצר או כתוב בו "אין לידים חדשים".
-- **`System/health/status.md`**: השורה האחרונה על מצב המערכת. מה רץ לאחרונה, מה נכשל, מה מחובר. מזה נבנית שורת בריאות אחת.
+What to extract from each source:
+- **The latest daily note in `Daily/`**: what happened yesterday, what is still open, what is set for today. This is the context the morning is built from.
+- **`task-list/Tasks.md`**: all open tasks (`- [ ]`). Flag the ones due today or overdue, and the high-priority ones.
+- **`Projects/`**: every active project flagged with a near deadline, a blocker, or something awaiting your decision. These feed "decisions to make".
+- **Leads**: new inquiries or potential customers that came in and have not been handled yet. If there is no organized lead source in the vault, keep the section short or write "no new leads".
+- **`System/health/status.md`**: the last line on system state. What ran recently, what failed, what is connected. From this the one health line is built.
 
-אם תיקייה או קובץ חסרים, זה לא שגיאה. דלג על אותו סעיף או כתוב בו שאין מידע, והמשך.
+If a folder or file is missing, that is not an error. Skip that section or write that there is no info, and continue.
 
-## שלב 2: הרכבת הבריף
+## Step 2: Compose the brief
 
-מתוך הראיות, הרכב בריף קצר בעברית עם חמשת הסעיפים. קרא את `references/report-template.md` כדי ללכת בדיוק לפי המבנה והכותרות.
+From the evidence, compose a short Hebrew brief with the five sections. Read `references/report-template.md` to follow the structure and headings exactly.
 
-כללי כתיבה:
-- כל סעיף קצר. בולטים, לא פסקאות. אם לסעיף אין תוכן, כתוב בו שורה אחת ("אין הזדמנויות חדשות הבוקר") ואל תמחק את הכותרת.
-- ספציפי, לא כללי. "להחליט אם לקחת את פרויקט [[שם]], חוסם את לוח השבוע" ולא "יש החלטות פתוחות".
-- `[[קישורי ויקי]]` לכל ישות: אדם, חברה, פרויקט, ליד. שזור במשפט.
-- **בריאות המערכת בשורה אחת בלבד.** למשל: "הכל רץ. דוח בוקר אתמול 07:00 ✅, וואטסאפ מחובר." או: "⚠️ הסנכרון של וואטסאפ לא רץ מאז אתמול, כדאי לבדוק."
+Writing rules:
+- Every section short. Bullets, not paragraphs. If a section has no content, write one line in it ("no new opportunities this morning") and do not delete the heading.
+- Specific, not generic. "Decide whether to take the [[name]] project, it is blocking the week's schedule" and not "there are open decisions".
+- `[[wikilinks]]` for every entity: person, company, project, lead. Weave into the sentence.
+- **System health in one line only.** For example: "Everything running. Morning report yesterday 07:00 ✅, WhatsApp connected." or: "⚠️ The WhatsApp sync has not run since yesterday, worth checking."
 
-חמשת הסעיפים (בסדר הזה):
+The five sections (in this order):
 
-| סעיף | מה נכנס |
+| Section | What goes in |
 | --- | --- |
-| הזדמנויות חדשות | דברים חדשים ששווה לקפוץ עליהם: ליד חם, פנייה, פתח שעלה בהערת היום או בפרויקט. |
-| החלטות שצריך לקבל | מה שממתין להכרעה שלך וחוסם התקדמות. מתוך פרויקטים והערת היום. |
-| משימות להיום | מהמשימות הפתוחות: מה דחוף, מה עם דדליין היום, ה-1 עד 3 הכי חשובות. |
-| לידים | פניות חדשות שלא טופלו, עם מקור אם ידוע. |
-| בריאות המערכת | שורה אחת: מה רץ, מה נכשל, מה מחובר. |
+| New opportunities | New things worth jumping on: a hot lead, an inquiry, an opening that came up in the daily note or a project. |
+| Decisions to make | What is waiting for your call and blocking progress. From projects and the daily note. |
+| Today's tasks | From the open tasks: what is urgent, what is due today, the 1 to 3 most important. |
+| Leads | New inquiries not handled yet, with the source if known. |
+| System health | One line: what ran, what failed, what is connected. |
 
-## שלב 3: כתיבת הדוח לכספת
+## Step 3: Write the report to the vault
 
-כתוב את הבריף להערת היום `Daily/YYYY-MM-DD.md` (התאריך של היום). אם הקובץ כבר קיים, **מזג** את הבריף לתוכו תחת כותרת `## דוח בוקר` במקום לדרוס. אם אין עדיין הערת יום להיום, צור אותה עם ה-frontmatter הסטנדרטי.
+Write the brief to today's note `Daily/YYYY-MM-DD.md` (today's date). If the file already exists, **merge** the brief into it under a `## דוח בוקר` heading instead of overwriting. If there is no daily note for today yet, create it with the standard frontmatter.
 
-מבנה ה-frontmatter:
+Frontmatter structure:
 
 ```yaml
 ---
@@ -78,39 +80,39 @@ tags: [morning-report, daily]
 ---
 ```
 
-אם מעדיפים בריף נפרד מהערת היום, אפשר לכתוב אותו ל-`Reports/morning-YYYY-MM-DD.md` (צור את `Reports/` אם אין). ברירת המחדל היא להערת היום, כי שם מחפשים את הבוקר.
+If you prefer a separate brief from the daily note, you can write it to `Reports/morning-YYYY-MM-DD.md` (create `Reports/` if it does not exist). The default is the daily note, because that is where the morning gets looked for.
 
-## שלב 4: שליחה בוואטסאפ (לא חובה)
+## Step 4: Send over WhatsApp (optional)
 
-אם המשתמש ביקש שהדוח יישלח אליו בוואטסאפ (וזו ברירת המחדל לשגרה המתוזמנת), שלח אותו דרך `wacli` לבעלים.
+If the user asked for the report to be sent to them over WhatsApp (and that is the default for the scheduled routine), send it via `wacli` to the owner.
 
-> [!warning] בדיקת זמינות קודם. `wacli` עובד על כל מערכת הפעלה (מק, חלונות, לינוקס), אבל ייתכן שעדיין לא התקינו וחיברו אותו. אם הוא לא מותקן, זה תקין, אל תיכשל בגלל זה. הבריף כבר נכתב להערת היום בשלב 3, וזו התוצאה החשובה. אם `wacli` לא זמין, דלג על השליחה, רשום `⚠️ חלקי` עם השורה "WhatsApp לא זמין: wacli לא מותקן", וציין בשורת בריאות המערכת שהבריף נכתב אך לא נשלח. כדי לחבר וואטסאפ, רוץ `/connect` ובחר וואטסאפ.
+> [!warning] Liveness check first. `wacli` works on every operating system (Mac, Windows, Linux), but it may not be installed and connected yet. If it is not installed, that is fine, do not fail over it. The brief was already written to the daily note in step 3, and that is the important result. If `wacli` is not available, skip the send, log `⚠️ חלקי` with the line "WhatsApp לא זמין: wacli לא מותקן", and note in the system-health line that the brief was written but not sent. To connect WhatsApp, run `/connect` and choose WhatsApp.
 
-בדוק קודם אם `wacli` מותקן ועובד. אם הפקודה לא נמצאת, הכלי עוד לא הותקן וחובר: דלג על כל שלב 4 והמשך לשלב 5 עם סטטוס חלקי.
+Check first whether `wacli` is installed and working. If the command is not found, the tool has not been installed and connected yet: skip all of step 4 and continue to step 5 with a partial status.
 
 ```bash
-# שער זמינות + שער חיות: בלי שניהם לא שולחים
+# availability gate + liveness gate: without both, do not send
 if ! command -v wacli >/dev/null 2>&1; then
-  echo "⚠️ wacli לא מותקן עדיין. הבריף נכתב לכספת, לא נשלח בוואטסאפ."
+  echo "wacli is not installed yet. Brief written to the vault, not sent over WhatsApp."
 else
   wacli doctor
 fi
 ```
 
-אם `wacli` קיים אבל `wacli doctor` מראה שהסנכרון תקוע או מנותק: אל תשלח. כתוב את הדוח לכספת בכל מקרה, וציין בשורת בריאות המערכת שהשליחה דולגה כי וואטסאפ לא היה מחובר.
+If `wacli` exists but `wacli doctor` shows the sync is stalled or disconnected: do not send. Write the report to the vault anyway, and note in the system-health line that the send was skipped because WhatsApp was not connected.
 
-אם הכל תקין, שלח את הבריף לבעלים (מספר היעד נשמר ב-`Context/me.md` או ב-`Context/infrastructure.md`):
+If everything is fine, send the brief to the owner (the target number is saved in `Context/me.md` or `Context/infrastructure.md`):
 
 ```bash
-# החלף OWNER במספר/מזהה הבעלים מתוך ההקשר
+# replace OWNER with the owner's number/id from the context
 wacli send --to "$OWNER" --text "$BRIEF"
 ```
 
-הבריף לוואטסאפ צריך להיות גרסה קצרה ונקייה: כותרת קצרה, ואז חמשת הסעיפים בשורות פשוטות בלי תחביר Obsidian (בלי `[[ ]]`, בלי `> [!note]`). וואטסאפ מציג טקסט רגיל.
+The WhatsApp brief should be a short, clean version: a short title, then the five sections in simple lines without Obsidian syntax (no `[[ ]]`, no `> [!note]`). WhatsApp shows plain text.
 
-## שלב 5: רישום ריצה ובריאות
+## Step 5: Run-log and health
 
-כל ריצה כותבת שורת לוג ומעדכנת את מצב המערכת, לפי המוסכמה של AIOS.
+Every run writes a log line and updates the system state, per the AIOS convention.
 
 ```bash
 DATE=$(date +%F); TIME=$(date +%H:%M); mkdir -p System/logs System/health
@@ -118,46 +120,46 @@ printf -- '- %s | morning-report | ✅ הצליח | בריף נכתב להערת
   "$TIME" "$SENT_NOTE" "$DUR" >> "System/logs/$DATE.md"
 ```
 
-(`$SENT_NOTE` = ", נשלח בוואטסאפ" אם נשלח, אחרת ריק. `$DUR` = משך בשניות. אם השליחה דולגה כי וואטסאפ לא היה מחובר, השתמש ב-⚠️ חלקי במקום ✅ הצליח, וכתוב בשורה שהבריף נכתב אך לא נשלח.)
+(`$SENT_NOTE` = ", נשלח בוואטסאפ" if sent, otherwise empty. `$DUR` = duration in seconds. If the send was skipped because WhatsApp was not connected, use ⚠️ חלקי instead of ✅ הצליח, and write in the line that the brief was written but not sent.)
 
-עדכן את שורת `morning-report` ב-`System/health/status.md`: חותמת זמן אחרונה, סטטוס אחרון, והתזמון הבא. אם אין עדיין טבלה, צור אותה עם עמודות: מיומנות, ריצה אחרונה, סטטוס, תזמון הבא.
+Update the `morning-report` line in `System/health/status.md`: last timestamp, last status, and the next schedule. If there is no table yet, create it with columns: routine, last run, status, next schedule.
 
-## שלב 6: סיכום בצ'אט
+## Step 6: Summary in the chat
 
-החזר תשובה קצרה: שורת פתיחה ("הבריף מוכן"), ואז הכותרות עם שורה אחת לכל סעיף, והנתיב לקובץ שנכתב. אם נשלח בוואטסאפ, ציין זאת. אל תדביק את כל הדוח פעמיים.
+Return a short reply: an opening line ("the brief is ready"), then the headings with one line per section, and the path to the file written. If it was sent over WhatsApp, note that. Do not paste the whole report twice.
 
-## תזמון
+## Scheduling
 
-הדוח בנוי לרוץ לבד כל בוקר, בערך ב-07:00, לפני שאתה מתחיל את היום. הוא לא רץ מעצמו: צריך לחבר לו טריגר.
+The report is built to run on its own every morning, around 07:00, before you start the day. It does not run by itself: it needs a trigger wired up.
 
-> [!important] המחשב חייב להיות דלוק ופתוח בשעת הריצה. המערכת היא דחיפה של תוצאה בשעות העבודה שלך, לא שרת שרץ 24/7. אם המחשב כבוי ב-07:00, הדוח פשוט לא יירוץ באותו יום.
+> [!important] The computer must be on and open at run time. The system is a push of a result during your working hours, not a server that runs 24/7. If the computer is off at 07:00, the report simply will not run that day.
 
-שתי דרכים לתזמן, ושתיהן עובדות גם ב-Windows וגם ב-macOS:
+Two ways to schedule, both work on Windows and macOS:
 
-1. **אפליקציית Claude Desktop, "Routines" (משימה מקומית)**: באפליקציית Claude Desktop אפשר להגדיר משימה מקומית שמריצה את `/morning-report` כל יום ב-07:00. המשימה רצה על המחשב הזה, אז הוא חייב להיות דלוק בשעה הזו. זו הדרך הפשוטה ביותר, והיא חוצת מערכות הפעלה.
+1. **The Claude Desktop app, "Routines" (a local task)**: in the Claude Desktop app you can set up a local task that runs `/morning-report` every day at 07:00. The task runs on this computer, so it must be on at that time. This is the simplest way, and it is cross-platform.
 
-2. **מיומנות התזמון** (`schedule`): הרץ את מיומנות ה-`schedule` ובקש ממנה לתזמן את `/morning-report` כל יום ב-07:00.
+2. **The schedule skill** (`schedule`): run the `schedule` skill and ask it to schedule `/morning-report` every day at 07:00.
 
-(רק על macOS, אם מעדיפים: אפשר במקום זאת שורת `cron`. ב-Windows אין `cron`, השתמש בשתי הדרכים שלמעלה.)
+(On macOS only, if preferred: you can use a `cron` line instead. Windows has no `cron`, use the two ways above.)
 
-אחרי שמתזמנים, עדכן את שורת `morning-report` ב-`System/health/status.md` עם "תזמון הבא: מחר 07:00", כדי ש-`/doctor` ידע מתי הדוח אמור לרוץ.
+After scheduling, update the `morning-report` line in `System/health/status.md` with "next schedule: tomorrow 07:00", so `/doctor` knows when the report is supposed to run.
 
-## חוקים
+## Rules
 
-1. אל תמציא. הבריף בנוי רק ממה שכבר רשום בכספת. אם אין מידע לסעיף, כתוב שאין, אל תמלא באוויר.
-2. חמישה סעיפים בדיוק, בסדר הזה: הזדמנויות חדשות, החלטות שצריך לקבל, משימות להיום, לידים, בריאות המערכת.
-3. בריאות המערכת היא **שורה אחת בלבד**.
-4. ספציפי, לא כללי. עם `[[קישורי ויקי]]` לכל ישות בקובץ הכספת.
-5. הדוח נכתב להערת היום `Daily/YYYY-MM-DD.md` (או `Reports/`), עם frontmatter `type: report`. לעולם לא לשורש הכספת.
-6. שליחה בוואטסאפ רק אחרי `wacli doctor`. אם וואטסאפ לא מחובר, אל תשלח, אבל כן כתוב לכספת וציין שהשליחה דולגה.
-7. כל ריצה כותבת שורת לוג ל-`System/logs/` ומעדכנת את `System/health/status.md`.
-8. הגרסה לוואטסאפ היא טקסט נקי בלי תחביר Obsidian.
-9. לעולם אל תשתמש במקף ארוך. פסיק, נקודה, נקודתיים, או פיצול למשפטים.
-10. אל תדביק את כל הדוח בצ'אט. סיכום קצר ונתיב.
+1. Do not invent. The brief is built only from what is already written in the vault. If there is no info for a section, write that there is none, do not fill it in out of thin air.
+2. Exactly five sections, in this order: new opportunities, decisions to make, today's tasks, leads, system health.
+3. System health is **one line only**.
+4. Specific, not generic. With `[[wikilinks]]` for every entity in the vault file.
+5. The report is written to today's note `Daily/YYYY-MM-DD.md` (or `Reports/`), with `type: report` frontmatter. Never to the vault root.
+6. Send over WhatsApp only after `wacli doctor`. If WhatsApp is not connected, do not send, but do write to the vault and note that the send was skipped.
+7. Every run writes a log line to `System/logs/` and updates `System/health/status.md`.
+8. The WhatsApp version is clean text without Obsidian syntax.
+9. Never use an em dash. Comma, period, colon, or split into sentences.
+10. Do not paste the whole report in the chat. A short summary and a path.
 
-## פתרון תקלות
+## Troubleshooting
 
-- **`wacli doctor` מראה שהסנכרון תקוע**: אל תשלח, השליחה תלך לחלל. כתוב את הבריף לכספת, סמן ⚠️ חלקי בלוג, וציין בשורת הבריאות שכדאי לבדוק את חיבור הוואטסאפ.
-- **אין הערת יום קודמת ב-`Daily/`**: לא שגיאה. בנה את הבריף מהמשימות והפרויקטים בלבד, וציין ש"אין הקשר מאתמול".
-- **`task-list/Tasks.md` חסר**: כנראה ההקמה לא הושלמה. בנה בריף חלקי מהזמין, וציין בשורת הבריאות שכדאי להריץ `/onboard` או לבדוק את מבנה הכספת.
-- **אין מקור לידים בכספת**: השאר את סעיף הלידים קצר ("אין לידים חדשים"). זה תקין, לא כל כספת מנהלת לידים.
+- **`wacli doctor` shows the sync is stalled**: do not send, the send would go into the void. Write the brief to the vault, mark ⚠️ חלקי in the log, and note in the health line that the WhatsApp connection is worth checking.
+- **No previous daily note in `Daily/`**: not an error. Build the brief from the tasks and projects only, and note that "there is no context from yesterday".
+- **`task-list/Tasks.md` is missing**: setup was probably not completed. Build a partial brief from what is available, and note in the health line that it is worth running `/onboard` or checking the vault structure.
+- **No lead source in the vault**: keep the leads section short ("no new leads"). That is fine, not every vault manages leads.

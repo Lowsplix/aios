@@ -22,9 +22,9 @@ Write ONLY the skill folder(s) assigned to you. Use absolute paths under `<repo-
 
 ## Language + voice (non-negotiable)
 - **All user-facing skill content is in HEBREW.** Simple, clear, warm-professional. Talk to a busy solo business owner, not an engineer.
-- **NEVER use em dashes (—).** Use commas, periods, colons, parentheses, or split sentences. Hebrew and English alike.
+- **NEVER use an em dash.** Use commas, periods, colons, parentheses, or split sentences. Hebrew and English alike.
 - Keep it SIMPLE. Short steps. No jargon dumps. The client should never feel lost. Prefer plain-language over "absolute path", "OAuth scope", etc. (explain in plain Hebrew when unavoidable).
-- Obsidian-native syntax in any vault file the skill writes: wikilinks `[[שם]]`, callouts `> [!type]`, frontmatter YAML.
+- Obsidian-native syntax in any vault file the skill writes: wikilinks `[[note-name]]`, callouts `> [!type]`, frontmatter YAML.
 
 ## SKILL.md conventions (copy Ben's exactly)
 - Frontmatter has EXACTLY two keys:
@@ -35,7 +35,8 @@ Write ONLY the skill folder(s) assigned to you. Use absolute paths under `<repo-
   ---
   ```
   No other frontmatter keys.
-- Body: `# Hebrew Title` (human name, not slug). Then a `> [!note]` one-liner of what it does. Then `## שלב N` numbered phases/steps executed in order. Use Markdown tables for any mapping. End every operational skill with `## חוקים` (hard rules, terse imperatives) and where useful `## פתרון תקלות`.
+- **Language convention (system English, client Hebrew)**: write all skill instructions, step text, rules, and reference docs in English. Each SKILL.md carries a `> [!important] Language` callout stating that the model reasons/runs in English but writes everything the user sees in Hebrew. Triggers stay bilingual (Hebrew + English) in the `description`. Hebrew is preserved only where it is the literal client-facing OUTPUT vocabulary: status tokens (`✅ תקין` / `⚠️ שים לב` / `❌ תקול`), run-log result tokens (`✅ הצליח` / `⚠️ חלקי` / `❌ נכשל`, `משך`), recommendation words, and the Hebrew register example. See `skills/doctor/SKILL.md` and `skills/onboard/references/claude-md-kernel.md` as the gold-standard exemplars.
+- Body: `# English Title` (human name, not slug). Then a `> [!note]` one-liner of what it does, then the `> [!important] Language` callout. Then `## Step N` numbered phases/steps executed in order. Use Markdown tables for any mapping. End every operational skill with `## Rules` (hard rules, terse imperatives) and where useful `## Troubleshooting`.
 - Reference files live in the skill's `references/` sibling folder. Read paths resolve relative to the SKILL.md dir; use `${CLAUDE_PLUGIN_ROOT}` when a skill must locate its own bundled assets across installs, with a fallback note.
 - Inline bash for real actions (mkdir, gws calls, wacli calls) in fenced ```bash blocks, exactly like Ben's os-setup Phase A and os-mcp.
 
@@ -48,7 +49,7 @@ mkdir -p .claude Context Projects Daily Resources Skills \
 ```
 - `Context/` holds the brain: me.md, business.md, services.md, icp.md, brand.md, strategy.md, infrastructure.md, pain-points.md (Hebrew filenames are fine too, but keep these English slugs for routing consistency).
 - `System/` is the OBSERVABILITY home: `System/logs/` (one dated run log per routine run), `System/health/status.md` (last-run + connection state). Every routine and the supervisor APPEND a run record here. This is how Adir and the client know what ran and what broke.
-- Root `CLAUDE.md` kernel is provided at `plugins/aios-core/skills/onboard/references/claude-md-kernel.md` (Hebrew). onboard copies it to the vault root and fills `os-mode`.
+- Root `CLAUDE.md` kernel is provided at `plugins/aios-core/skills/onboard/references/claude-md-kernel.md` (English structure with a "think in English, talk in Hebrew" policy; the model renders Hebrew to the user). onboard copies it to the vault root and fills `os-mode`.
 
 ## Run-logging convention (ALL routines + supervisor use this)
 Every scheduled or triggered run appends a record to `System/logs/YYYY-MM-DD.md` and updates `System/health/status.md`. Record format (Hebrew labels):
@@ -68,7 +69,7 @@ tags: [tag1, tag2]
 ```
 
 ## Scheduling
-Routines (morning-report) are wired with the user's `schedule` skill / cron. The skill should INSTRUCT how to schedule itself (a `## תזמון` section) and write the trigger, not assume it runs itself. Note clearly that the machine/terminal must be on at the scheduled time (design is outcome-push during the client's working hours, not a 24/7 server).
+Routines (morning-report) are wired with the user's `schedule` skill / cron. The skill should INSTRUCT how to schedule itself (a `## Scheduling` section) and write the trigger, not assume it runs itself. Note clearly that the machine/terminal must be on at the scheduled time (design is outcome-push during the client's working hours, not a 24/7 server).
 
 ## Self-verify before returning
 After writing, `ls -R` your skill folder and `cat` each SKILL.md you wrote to confirm it is valid. Return a short summary: files written (absolute paths), what each skill does, and any assumption you made.

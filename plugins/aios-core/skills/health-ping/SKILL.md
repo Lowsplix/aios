@@ -1,23 +1,25 @@
 ---
 name: health-ping
-description: מריץ בדיקת בריאות ושולח שורת סטטוס אחת לאדיר (המתחזק) במייל דרך gws, כדי שיהיה לו דופק יומי על כל מערכת לקוח בלי להיכנס לכל מחשב. חוצה מערכות הפעלה (עובד גם ב-Windows). שולח רק סיכום בריאות, בלי תוכן עסקי. רץ בתזמון יומי. Use when user says "health ping", "פינג בריאות", "שלח סטטוס לאדיר", or runs /health-ping. Maintainer fleet-monitoring heartbeat over email.
+description: "Runs a health check and sends one status line to Adir (the maintainer) by email through gws, so he has a daily pulse on every client system without logging into each machine. Cross-platform (works on Windows too). Sends only a health summary, no business content. Runs on a daily schedule. Use when the user says 'health ping', 'פינג בריאות', 'שלח סטטוס לאדיר', or runs /health-ping. Maintainer fleet-monitoring heartbeat over email."
 ---
 
-# פינג בריאות לאדיר
+# Health ping to Adir
 
-> [!note] שולח לאדיר מייל אחד ביום עם שורת בריאות אחת, כדי שיֵדע ממרחק מה עובד ומה נשבר אצל כל לקוח. רק סיכום בריאות, בלי שום תוכן עסקי פרטי.
+> [!note] Sends Adir one email a day with a single health line, so he knows from a distance what is working and what broke at each client. Only a health summary, no private business content.
 
-זו שכבת התצפית של אדיר על פני כל הלקוחות. כל מערכת לקוח שולחת דופק יומי **במייל דרך [[gws]]**, ערוץ שעובד על כל מערכת הפעלה (כולל Windows, שם אין wacli). אדיר מסנן את המיילים האלה לתווית אחת ורואה את כל הצי בפנל אחד.
+> [!important] Language: these instructions are in English; the user is Hebrew-speaking. Reason and run the steps in English, but write everything the user sees in Hebrew: chat replies, reports, vault notes, tables, status lines, task text. Keep commands, file paths, field names, dates, and numbers as they are.
 
-## שלב 1: בדיקת בריאות
+This is Adir's observability layer across all clients. Every client system sends a daily pulse **by email through [[gws]]**, a channel that works on every OS (including Windows, where there is no wacli). Adir filters these emails into one label and sees the whole fleet in a single panel.
 
-הרץ את ההיגיון של `/doctor` (או קרא את `System/health/status.md` אם רץ זה עתה): מצב החיבורים (gws, wacli אם רלוונטי, מפתחות API) והריצה האחרונה של כל שגרה. סכם לשורה אחת אחת, לדוגמה:
+## Step 1: Health check
 
-`STATUS_LINE="[שם הלקוח] | 2026-06-18 | gws ✅ | דוח בוקר ✅ 07:00 | סריקה ❌ אתמול | גרסה 0.1.0"`
+Run the logic of `/doctor` (or read `System/health/status.md` if it just ran): the state of the connections (gws, wacli if relevant, API keys) and the last run of each routine. Summarize into a single line, for example:
 
-## שלב 2: יעד המתחזק (אדיר)
+`STATUS_LINE="[client name] | 2026-06-18 | gws ✅ | דוח בוקר ✅ 07:00 | סריקה ❌ אתמול | גרסה 0.1.0"`
 
-היעד נשמר ב-`System/health/maintainer.md`. אם הקובץ לא קיים, צור אותו עם ברירת המחדל (אדיר), ככה הדופק מחובר מהרגע הראשון:
+## Step 2: Maintainer target (Adir)
+
+The target is stored in `System/health/maintainer.md`. If the file does not exist, create it with the default (Adir), so the pulse is wired up from the very first moment:
 
 ```bash
 MF="System/health/maintainer.md"
@@ -36,12 +38,12 @@ email: adir@adirsellam.com
 EOF
 fi
 EMAIL="$(grep -m1 '^email:' "$MF" | sed 's/^email: *//')"
-echo "יעד: $EMAIL"
+echo "target: $EMAIL"
 ```
 
-## שלב 3: שליחה במייל דרך gws
+## Step 3: Send by email through gws
 
-ערוץ ברירת המחדל. עובד על כל מערכת הפעלה (gws הוא כלי Node):
+The default channel. Works on every OS (gws is a Node tool):
 
 ```bash
 if command -v gws >/dev/null 2>&1 && gws auth status >/dev/null 2>&1 && [ -n "$EMAIL" ]; then
@@ -52,28 +54,28 @@ if command -v gws >/dev/null 2>&1 && gws auth status >/dev/null 2>&1 && [ -n "$E
 else
   SENT="⚠️ חלקי"
   echo "$STATUS_LINE" >> System/health/status.md
-  echo "gws לא מחובר או אין יעד, הדופק נשמר מקומית ל-System/health/status.md"
+  echo "gws not connected or no target, the pulse was saved locally to System/health/status.md"
 fi
 ```
 
-> [!note] אם הלקוח על מק ויש wacli מחובר, אפשר להוסיף שליחה גם בוואטסאפ כתוספת, אבל המייל הוא הערוץ הראשי כי הוא חוצה מערכות הפעלה.
+> [!note] If the client is on a Mac and has wacli connected, you can additionally send over WhatsApp as a bonus, but email is the primary channel because it is cross-platform.
 
-## שלב 4: רישום
+## Step 4: Log
 
-הוסף שורת לוג ל-`System/logs/YYYY-MM-DD.md`:
+Add a log line to `System/logs/YYYY-MM-DD.md`:
 
 ```
 - HH:MM | health-ping | ✅ הצליח | נשלח דופק לאדיר במייל | משך: Ns
 - HH:MM | health-ping | ⚠️ חלקי | gws לא מחובר, דופק נשמר מקומית | משך: Ns
 ```
 
-## תזמון
+## Scheduling
 
-תזמן פעם ביום (למשל 07:05, מיד אחרי דוח הבוקר). דרך חוצת מערכות הפעלה: אפליקציית Claude Desktop, "Routines" (משימה מקומית), או מיומנות ה-`schedule`. המשימה רצה על המחשב הזה, אז הוא חייב להיות דלוק בשעת התזמון. (על macOS אפשר במקום זאת `cron`. ב-Windows אין `cron`.)
+Schedule it once a day (e.g. 07:05, right after the morning report). A cross-platform path: the Claude Desktop app, "Routines" (a local task), or the `schedule` skill. The task runs on this machine, so it must be on at the scheduled time. (On macOS you can use `cron` instead. On Windows there is no `cron`.)
 
-## חוקים
+## Rules
 
-- שלח רק סיכום בריאות: שמות רכיבים, ✅/⚠️/❌, חותמות זמן, גרסה. לעולם לא תוכן עסקי, לא לידים, לא פרטי לקוחות.
-- הערוץ הוא מייל דרך gws (חוצה מערכות הפעלה). זה הברירת מחדל ועובד גם ב-Windows.
-- היעד מוגדר ב-`System/health/maintainer.md`. ברירת מחדל: adir@adirsellam.com. הלקוח יכול למחוק ולבטל.
-- אם gws לא מחובר, אל תיכשל: שמור את הדופק מקומית ורשום ⚠️ חלקי.
+- Send only a health summary: component names, ✅/⚠️/❌, timestamps, version. Never business content, no leads, no client details.
+- The channel is email through gws (cross-platform). That is the default and works on Windows too.
+- The target is defined in `System/health/maintainer.md`. Default: adir@adirsellam.com. The client can delete it to opt out.
+- If gws is not connected, do not fail: save the pulse locally and log ⚠️ חלקי.

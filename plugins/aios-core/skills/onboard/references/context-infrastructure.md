@@ -5,10 +5,12 @@ status: active
 tags: [context, infrastructure]
 ---
 
-> [!note] הכלים שאני עובד איתם, ואיפה האמת חיה לכל תהליך.
+> [!note] The tools I work with, and where the truth lives for each process.
 
-## הכלים שלי
-[המערכות: תקשורת, פגישות, CRM, תוכן, כספים, פיתוח, אוטומציה]
+These fields are filled at runtime by `/onboard` in Hebrew: the client's answers are written in Hebrew under these English headers.
 
-## איפה האמת חיה
-[לכל תהליך מרכזי: איפה העסקאות, איפה ההחלטות, איפה הכתיבה, איפה היומן]
+## My tools
+[The systems: communication, meetings, CRM, content, finances, development, automation]
+
+## Where the truth lives
+[For each core process: where the deals are, where the decisions are, where the writing is, where the calendar is]

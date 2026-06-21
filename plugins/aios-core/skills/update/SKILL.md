@@ -1,51 +1,53 @@
 ---
 name: update
-description: מושך את הגרסה האחרונה של תוסף ה-AIOS מהמאגר המרכזי של אדיר, כך שכל המיומנויות של הלקוח מתעדכנות בלי שהלקוח צריך לעשות כלום. רץ ידנית או בתזמון יומי לעדכון אוטומטי. Use when user says "update", "עדכון", "עדכן את המערכת", or runs /update. Maintainer-facing self-update for the aios-core plugin.
+description: "Pulls the latest version of the AIOS plugin from Adir's central repo, so all of the client's skills update without the client doing anything. Runs manually or on a daily schedule for automatic updates. Use when the user says 'update', 'עדכון', 'עדכן את המערכת', or runs /update. Maintainer-facing self-update for the aios-core plugin."
 ---
 
-# עדכון המערכת
+# System update
 
-> [!note] מושך את הגרסה האחרונה של התוסף מהמאגר של אדיר ומעדכן את כל המיומנויות. הלקוח לא צריך לבנות כלום.
+> [!note] Pulls the latest version of the plugin from Adir's repo and updates all the skills. The client does not have to build anything.
 
-המיומנויות חיות בתוסף Claude Code אחד (`aios-core`) שמותקן מהמאגר המרכזי של [[אדיר סלם]]. כשאדיר משפר מיומנות אצל לקוח אחד, הוא דוחף את השינוי למאגר, וכל לקוח מושך אותו. ככה כולם נשארים מעודכנים מנקודה אחת.
+> [!important] Language: these instructions are in English; the user is Hebrew-speaking. Reason and run the steps in English, but write everything the user sees in Hebrew: chat replies, reports, vault notes, tables, status lines, task text. Keep commands, file paths, field names, dates, and numbers as they are.
 
-## שלב 1: איתור תיקיית התוסף
+The skills live in a single Claude Code plugin (`aios-core`) installed from [[אדיר סלם]]'s central repo. When Adir improves a skill at one client, he pushes the change to the repo, and every client pulls it. That keeps everyone up to date from a single point.
 
-תיקיית המאגר נקבעת בהתקנה ונשמרת ב-`System/health/status.md` בשדה `plugin_dir`. אם אין, חפש את המאגר המשוכפל (clone) של `aios`.
+## Step 1: Locate the plugin folder
+
+The repo folder is set at install time and stored in `System/health/status.md` under the `plugin_dir` field. If it is not there, look for the cloned `aios` repo.
 
 ```bash
 PLUGIN_DIR="$(grep -m1 'plugin_dir:' System/health/status.md 2>/dev/null | sed 's/.*plugin_dir: *//')"
 [ -z "$PLUGIN_DIR" ] && PLUGIN_DIR="$(find "$HOME" -maxdepth 4 -type d -name aios -path '*aios*' 2>/dev/null | head -1)"
-echo "תיקיית התוסף: $PLUGIN_DIR"
+echo "plugin folder: $PLUGIN_DIR"
 OLD_VER="$(python3 -c "import json;print(json.load(open('$PLUGIN_DIR/plugins/aios-core/.claude-plugin/plugin.json'))['version'])" 2>/dev/null)"
 ```
 
-## שלב 2: משיכת העדכון
+## Step 2: Pull the update
 
 ```bash
 git -C "$PLUGIN_DIR" pull --ff-only
 NEW_VER="$(python3 -c "import json;print(json.load(open('$PLUGIN_DIR/plugins/aios-core/.claude-plugin/plugin.json'))['version'])" 2>/dev/null)"
-echo "גרסה: $OLD_VER -> $NEW_VER"
+echo "version: $OLD_VER -> $NEW_VER"
 ```
 
-אם זמין, רענן גם את רישום התוסף ב-Claude Code (`/plugin marketplace update` בסשן אינטראקטיבי). שינויים במיומנויות נטענים בסשן הבא.
+Refresh the plugin registration in the terminal with `claude plugin update aios-core` (or `claude plugin marketplace update aios`). Skill changes load in the next session.
 
-## שלב 3: רישום ודיווח
+## Step 3: Log and report
 
-עדכן את `System/health/status.md` (שורת `aios-core version` + חותמת זמן) והוסף שורת לוג ל-`System/logs/YYYY-MM-DD.md` בפורמט הסטנדרטי:
+Update `System/health/status.md` (the `aios-core version` row + timestamp) and add a log line to `System/logs/YYYY-MM-DD.md` in the standard format:
 
 ```
 - HH:MM | update | ✅ הצליח | עודכן מ-OLD ל-NEW | משך: Ns
 ```
 
-דווח ללקוח במשפט אחד בעברית: אם לא היה עדכון, "המערכת כבר מעודכנת (גרסה X)". אם היה, "עודכנת לגרסה Y, השינויים ייכנסו לתוקף בסשן הבא".
+Report to the client in one Hebrew sentence: if there was no update, "המערכת כבר מעודכנת (גרסה X)". If there was, "עודכנת לגרסה Y, השינויים ייכנסו לתוקף בסשן הבא".
 
-## תזמון
+## Scheduling
 
-להפעלה אוטומטית, תזמן את `/update` פעם ביום (למשל 06:00). דרך חוצת מערכות הפעלה: אפליקציית Claude Desktop, "Routines" (משימה מקומית), או מיומנות ה-`schedule`. ככה הלקוח מתעדכן לבד אחרי שאדיר דוחף שיפור. המשימה רצה על המחשב הזה, אז הוא צריך להיות דלוק בזמן התזמון. (על macOS אפשר במקום זאת `cron`. ב-Windows אין `cron`.)
+For automatic operation, schedule `/update` once a day (e.g. 06:00). A cross-platform path: the Claude Desktop app, "Routines" (a local task), or the `schedule` skill. That way the client updates on their own after Adir pushes an improvement. The task runs on this machine, so it needs to be on at the scheduled time. (On macOS you can use `cron` instead. On Windows there is no `cron`.)
 
-## חוקים
+## Rules
 
-- משיכה בלבד (`--ff-only`). לעולם אל תשנה או תדחוף קוד מצד הלקוח. הלקוח צרכן, לא עורך.
-- אם ה-pull נכשל (קונפליקט, אין רשת), אל תיגע בכלום, רשום `❌ נכשל` עם הסיבה, ודווח לאדיר.
-- תמיד רשום גרסה לפני ואחרי, כדי שאפשר יהיה לדעת מי על איזו גרסה.
+- Pull only (`--ff-only`). Never change or push code from the client side. The client is a consumer, not an editor.
+- If the pull fails (conflict, no network), do not touch anything, log `❌ נכשל` with the reason, and report to Adir.
+- Always log the version before and after, so you can tell who is on which version.

@@ -3,87 +3,89 @@ name: level-up
 description: "Finds the next thing to automate using Nate Herk's 5-question pattern in Hebrew (what you did 3+ times this week, what felt manual/boring/copy-paste, what a smart assistant could have done, what breaks first at 500 customers, what would give you 500 customers if it ran alone). From the answers, proposes 1-3 concrete skills (name, trigger, one-line goal, steps), lets the user pick one, then scaffolds a Skills/{name}/SKILL.md stub in Hebrew following the AIOS conventions. Use when the user says 'level up', 'שדרוג', 'מה לבנות הבא', 'מה לאוטמט', 'תבנה לי מיומנות', or runs /level-up."
 ---
 
-# שדרוג (המיומנות הבאה)
+# Level up (the next skill)
 
-> [!note] מוצא את הדבר הבא ששווה לאוטמט, דרך חמש שאלות. מתוך התשובות מציע 1 עד 3 מיומנויות קונקרטיות, אתה בוחר אחת, והיא נבנית כשלד `SKILL.md` מוכן בכספת.
+> [!note] Finds the next thing worth automating, through five questions. From the answers it proposes 1 to 3 concrete skills, you pick one, and it gets built as a ready `SKILL.md` skeleton in the vault.
 
-זה ההמשך הטבעי של `/audit`. הביקורת מגלה איפה המערכת חלשה (איזה C נמוך). השדרוג לוקח את זה צעד קדימה: במקום עוד דוח, הוא מוציא ממך את הדבר הכי שווה לבנות, ומתחיל לבנות אותו. הבסיס הוא דפוס חמש השאלות של Nate Herk לזיהוי אוטומציות.
+> [!important] Language: these instructions are in English; the user is Hebrew-speaking. Reason and run the steps in English, but write everything the user sees in Hebrew: chat replies, reports, vault notes, tables, status lines, task text. Keep commands, file paths, field names, dates, and numbers as they are.
 
-## שלב 1: רקע מהיר (לא חובה, מומלץ)
+This is the natural follow-up to `/audit`. The audit finds where the system is weak (which C is low). Level up takes it one step further: instead of another report, it pulls out of you the single most worthwhile thing to build, and starts building it. The base is Nate Herk's five-question pattern for spotting automations.
 
-אם רץ זה עתה `/audit`, הצץ בדוח האחרון ב-`System/health/` כדי לדעת איזה C הכי נמוך. זה מכוון את השאלות: אם הקצב נמוך, חפש שגרה לבנות. אם היכולות נמוכות, חפש פעולה חוזרת לאוטמט. קרא גם בקצרה את `Context/me.md` ו-`Context/services.md` כדי שההצעות יתאימו לעסק ולא יהיו גנריות.
+## Step 1: Quick background (optional, recommended)
 
-## שלב 2: חמש השאלות
+If `/audit` just ran, glance at the latest report in `System/health/` to see which C is lowest. That steers the questions: if cadence is low, look for a routine to build. If capability is low, look for a repetitive action to automate. Also briefly read `Context/me.md` and `Context/services.md` so the proposals fit the business and are not generic.
 
-שאל את חמש השאלות, אחת-אחת או יחד, בעברית פשוטה. תן לבעל העסק לענות במילים שלו. אלו השאלות שמוציאות את האוטומציה הנכונה:
+## Step 2: The five questions
 
-1. **מה עשית שלוש פעמים או יותר השבוע?** (חזרה היא הסימן הכי חזק לאוטומציה.)
-2. **מה הרגיש ידני, משעמם, או העתק-הדבק?** (חיכוך = הזדמנות.)
-3. **מה "מתמחה חכם" היה יכול לעשות במקומך, אבל עשית בעצמך?** (עבודה שלא דורשת אותך דווקא.)
-4. **אם מחר נכנסים 500 לקוחות, מה נשבר ראשון?** (צוואר הבקבוק שמגביל גדילה.)
-5. **מה היה נותן לך 500 לקוחות אם היה רץ לבד?** (המנוף שלא מנוצל.)
+Ask the five questions, one by one or together, in plain Hebrew. Let the business owner answer in their own words. These are the questions that pull out the right automation:
 
-הקשב לדפוסים. שאלות 1 עד 3 מוצאות בזבוז קיים. שאלות 4 ו-5 מוצאות את החסם לגדילה. הזהב נמצא איפה שתשובה חוזרת בכמה שאלות.
+1. **What did you do three or more times this week?** (Repetition is the strongest signal for automation.)
+2. **What felt manual, boring, or copy-paste?** (Friction equals opportunity.)
+3. **What could a "smart assistant" have done for you, but you did yourself?** (Work that does not actually require you.)
+4. **If 500 customers walked in tomorrow, what would break first?** (The bottleneck that limits growth.)
+5. **What would give you 500 customers if it ran on its own?** (The unused lever.)
 
-## שלב 3: הצעת 1 עד 3 מיומנויות
+Listen for patterns. Questions 1 to 3 find existing waste. Questions 4 and 5 find the limit to growth. The gold is where an answer recurs across several questions.
 
-מתוך התשובות, הצע 1 עד 3 מיומנויות קונקרטיות. לא רעיונות מעורפלים, מיומנויות שאפשר לבנות. כל אחת בדיוק בפורמט הזה:
+## Step 3: Propose 1 to 3 skills
 
-| שדה | מה לכתוב |
+From the answers, propose 1 to 3 concrete skills. Not vague ideas, skills you can build. Each one in exactly this format:
+
+| Field | What to write |
 | --- | --- |
-| **שם** | kebab-case, יהפוך לפקודה. למשל `lead-followup`. |
-| **טריגר** | מה מפעיל אותה: פקודה, מילה בעברית, או לוח זמנים. |
-| **מטרה במשפט** | מה היא עושה, בשורה אחת. |
-| **שלבים** | 3 עד 5 צעדים שהיא מבצעת, בקצרה. |
+| **Name** | kebab-case, becomes a command. For example `lead-followup`. |
+| **Trigger** | What sets it off: a command, a Hebrew word, or a schedule. |
+| **Goal in one sentence** | What it does, in one line. |
+| **Steps** | 3 to 5 steps it performs, briefly. |
 
-הצמד כל הצעה לתשובה שממנה היא נולדה ("אמרת שאתה מכין הצעת מחיר ידנית כל שבוע, אז..."). דרג מהמשפיע ביותר לפחות, כמו ב-`/audit`: מה ישחרר הכי הרבה זמן או יסיר את צוואר הבקבוק הגדול ביותר.
+Tie each proposal to the answer it came from ("you said you build a price quote manually every week, so..."). Rank from most impactful to least, as in `/audit`: what frees the most time or removes the biggest bottleneck.
 
-הצג את ההצעות וברר מה לבחור באמצעות `AskUserQuestion`. אל תבנה לפני שבחרו. אם אף הצעה לא מדויקת, חדד עם שאלה אחת ונסה שוב.
+Show the proposals and find out which one to pick using `AskUserQuestion`. Do not build before they pick. If no proposal is exact, sharpen it with one question and try again.
 
-## שלב 4: בניית השלד של המיומנות שנבחרה
+## Step 4: Build the skeleton of the chosen skill
 
-למיומנות שנבחרה, צור `Skills/{name}/SKILL.md` בכספת. עברית, לפי אותן מוסכמות בדיוק כמו כל מיומנות ב-AIOS. השלד מוכן למילוי, לא ריק:
+For the chosen skill, create `Skills/{name}/SKILL.md` in the vault. In Hebrew, following exactly the same conventions as every AIOS skill. The skeleton is ready to fill in, not empty:
 
 ```bash
-NAME="lead-followup"   # החלף בשם שנבחר
+NAME="lead-followup"   # replace with the chosen name
 mkdir -p "Skills/$NAME"
 ```
 
-כתוב את `Skills/{name}/SKILL.md` במבנה הזה:
+Write `Skills/{name}/SKILL.md` in this structure:
 
 ```markdown
 ---
 name: {name}
-description: "{מטרה במשפט} + ההתנהגויות הקונקרטיות + ביטויי טריגר בעברית ובאנגלית. Use when user says '{טריגר}' or runs /{name}."
+description: "{goal in one sentence} + the concrete behaviors + trigger phrases in Hebrew and English. Use when user says '{trigger}' or runs /{name}."
 ---
 
-# {שם בעברית קריא}
+# {readable Hebrew title}
 
-> [!note] {שורה אחת: מה המיומנות עושה ולמי.}
+> [!note] {one line: what the skill does and for whom.}
 
-## שלב 1: {הצעד הראשון}
-{מה קורה כאן}
+## Step 1: {the first step}
+{what happens here}
 
-## שלב 2: {הצעד הבא}
+## Step 2: {the next step}
 {...}
 
-## שלב 3: {הצעד האחרון}
+## Step 3: {the last step}
 {...}
 
-## חוקים
+## Rules
 
-1. {כלל קשיח ראשון}
-2. {כלל קשיח שני}
-3. לעולם אל תשתמש במקף ארוך. פסיק, נקודה, או נקודתיים.
+1. {first hard rule}
+2. {second hard rule}
+3. Never use an em dash. Comma, period, or colon.
 ```
 
-מלא את השלבים מתוך עמודת "שלבים" של ההצעה שנבחרה. אם המיומנות צריכה לרוץ על לוח זמנים, הוסף סעיף `## תזמון` שמסביר איך לתזמן אותה בדרך חוצת מערכות הפעלה (אפליקציית Claude Desktop, "Routines" / משימה מקומית, או מיומנות ה-`schedule`; cron הוא אופציה ל-macOS בלבד), ומציין שהמחשב חייב להיות דלוק בזמן הריצה. אם היא נוגעת במערכת חיצונית, הוסף בלוק ```bash עם הפקודה האמיתית.
+Fill the steps from the "Steps" column of the chosen proposal. If the skill needs to run on a schedule, add a `## Scheduling` section that explains how to schedule it in a cross-platform way (the Claude Desktop app, "Routines" / a local task, or the `schedule` skill; cron is a macOS-only option), and notes that the computer must be on at run time. If it touches an external system, add a ```bash block with the real command.
 
-הסבר שזה שלד התחלתי: השלבים בקווים כלליים, וכדאי להריץ אותה פעם אחת ולחדד לפי המציאות.
+Explain that this is a starting skeleton: the steps are in broad strokes, and it is worth running it once and refining against reality.
 
-## שלב 5: רישום וסגירה
+## Step 5: Log and close
 
-הוסף שורת לוג ל-`System/logs/YYYY-MM-DD.md` ועדכן את `System/health/status.md` עם המיומנות החדשה.
+Add a log line to `System/logs/YYYY-MM-DD.md` and update `System/health/status.md` with the new skill.
 
 ```bash
 DATE=$(date +%F); TIME=$(date +%H:%M); mkdir -p System/logs
@@ -91,22 +93,22 @@ printf -- '- %s | level-up | ✅ הצליח | נבנה שלד למיומנות %
   "$TIME" "$NAME" "$DUR" >> "System/logs/$DATE.md"
 ```
 
-בצ'אט, החזר: השם והנתיב של המיומנות החדשה, ומשפט על מה הצעד הבא (להריץ אותה פעם אחת ולחדד). אם נשארו עוד הזדמנויות טובות מההצעות, ציין שאפשר להריץ `/level-up` שוב כדי לבנות את הבאה.
+In the chat, return: the name and path of the new skill, and a sentence on the next step (run it once and refine). If there are more good opportunities left from the proposals, note that you can run `/level-up` again to build the next one.
 
-## חוקים
+## Rules
 
-1. תמיד חמש שאלות לפני הצעה. אל תדלג ישר לבנייה.
-2. הצעות קונקרטיות בלבד: שם, טריגר, מטרה במשפט, שלבים. לא רעיונות מעורפלים.
-3. הצמד כל הצעה לתשובה שממנה נולדה. בלי זה היא גנרית.
-4. אל תבנה לפני שהמשתמש בחר. תמיד `AskUserQuestion`.
-5. השלד נכתב ל-`Skills/{name}/SKILL.md` בלבד, לפי מוסכמות ה-SKILL.md של AIOS (frontmatter עם שני מפתחות, כותרת עברית, `## שלב N`, `## חוקים`).
-6. השלד מוכן למילוי, לא ריק. שלבים אמיתיים מההצעה.
-7. כל ריצה כותבת שורת לוג ומעדכנת את `System/health/status.md`.
-8. לעולם אל תשתמש במקף ארוך. פסיק, נקודה, נקודתיים, או פיצול למשפטים.
-9. מיומנות אחת בכל ריצה. אם רוצים עוד, מריצים שוב.
+1. Always five questions before a proposal. Do not skip straight to building.
+2. Concrete proposals only: name, trigger, goal in one sentence, steps. Not vague ideas.
+3. Tie each proposal to the answer it came from. Without that it is generic.
+4. Do not build before the user picks. Always `AskUserQuestion`.
+5. The skeleton is written to `Skills/{name}/SKILL.md` only, following the AIOS SKILL.md conventions (frontmatter with two keys, Hebrew title, `## Step N`, `## Rules`).
+6. The skeleton is ready to fill in, not empty. Real steps from the proposal.
+7. Every run writes a log line and updates `System/health/status.md`.
+8. Never use an em dash. Comma, period, colon, or split into sentences.
+9. One skill per run. If they want more, run again.
 
-## פתרון תקלות
+## Troubleshooting
 
-- **התשובות מעורפלות**: שאל שאלת המשך אחת ספציפית ("איזו פעולה לקחה לך הכי הרבה זמן השבוע?"). אל תמציא הצעה מאוויר.
-- **כבר קיימת מיומנות דומה**: אל תשכפל. במקום, הצע לחדד את הקיימת, או הצע מיומנות אחרת מההצעות.
-- **המיומנות שנבחרה גדולה מדי**: פצל. בנה קודם את הגרסה הקטנה שעובדת, והשאר את ההרחבה לריצה הבאה של `/level-up`.
+- **The answers are vague**: ask one specific follow-up question ("which action took you the most time this week?"). Do not invent a proposal out of thin air.
+- **A similar skill already exists**: do not duplicate. Instead, offer to refine the existing one, or propose a different skill from the proposals.
+- **The chosen skill is too big**: split it. Build the small working version first, and leave the extension for the next run of `/level-up`.

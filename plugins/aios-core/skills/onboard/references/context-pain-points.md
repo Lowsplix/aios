@@ -5,10 +5,12 @@ status: active
 tags: [context, pain-points]
 ---
 
-> [!note] העבודות החוזרות שמתישות אותי, מועמדות ראשונות לאוטומציה.
+> [!note] The recurring work that drains me, the first candidates for automation.
 
-## מה מתיש
-[לכל עבודה כואבת וחוזרת: כשקורה X אני עושה Y, זה לוקח Z זמן, התוצר הוא W, ומה שהייתי רוצה זה V]
+These fields are filled at runtime by `/onboard` in Hebrew: the client's answers are written in Hebrew under these English headers.
 
-## מה שואב את הקשב עכשיו
-[לולאות פתוחות, החלטות שיושבות, דברים שאמורים להיעשות ולא נעשים]
+## What drains me
+[For each painful, recurring task: when X happens I do Y, it takes Z time, the output is W, and what I would want is V]
+
+## What is pulling my attention right now
+[Open loops, decisions that are sitting, things that should get done and are not]

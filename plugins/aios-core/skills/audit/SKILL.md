@@ -3,70 +3,72 @@ name: audit
 description: "Inspects the AIOS vault against the 4 C's (Context, Connections, Capabilities, Cadence) and produces a Hebrew scorecard. Reads Context/, Skills/, System/health/status.md, and the scheduled jobs; scores each C 0-100 with the deciding reason; computes an overall score; ranks the top 3 gaps by leverage with a concrete next action each. Writes the report to System/health/audit-YYYY-MM-DD.md and appends a run-log line. Light, markdown-only, no HTML. Use when the user says 'audit', 'ביקורת', 'תבדוק את המערכת', 'כמה המערכת בנויה', 'ציון למערכת', or runs /audit."
 ---
 
-# ביקורת מערכת (4C)
+# System audit (4C)
 
-> [!note] צילום מצב של כמה המערכת שלך באמת בנויה. נותן ציון 0 עד 100 לכל אחד מארבעת ה-C, ציון כולל, ושלושת הפערים החשובים ביותר עם פעולה מעשית לכל אחד.
+> [!note] A snapshot of how built-out your system really is. It gives a score of 0 to 100 for each of the four C's, an overall score, and the three most important gaps with a concrete action for each.
 
-המסגרת היא ארבעה C: **הקשר** (כמה מהעסק מתועד), **חיבורים** (אילו מערכות מחוברות), **יכולות** (אילו מיומנויות קיימות), **קצב** (אילו שגרות רצות לבד). זה עמוד השדרה של הביקורת. הציון בודק מציאות מול מה שאמור להיות, לא מבטיח ולא מייפה.
+> [!important] Language: these instructions are in English; the user is Hebrew-speaking. Reason and run the steps in English, but write everything the user sees in Hebrew: chat replies, reports, vault notes, tables, status lines, task text. Keep commands, file paths, field names, dates, and numbers as they are.
 
-לפני שמתחילים, קרא את `references/four-c-rubric.md` כדי לדעת איך לתת ציון לכל C (איך נראה 0, 50, 100).
+The framework is four C's: **Context** (how much of the business is documented), **Connections** (which systems are connected), **Capabilities** (which skills exist), **Cadence** (which routines run on their own). That is the backbone of the audit. The score checks reality against what should be, it does not promise or flatter.
 
-## שלב 1: איסוף הראיות
+Before you start, read `references/four-c-rubric.md` to know how to score each C (what 0, 50, 100 look like).
 
-אסוף את כל מה שצריך כדי לתת ציון. אל תקרא קבצים שלמים אם אפשר לסרוק. השתמש ב-`grep` ו-`ls`.
+## Step 1: Gather the evidence
+
+Collect everything needed to score. Do not read whole files if you can scan. Use `grep` and `ls`.
 
 ```bash
-# הקשר: כמה קבצי Context קיימים ועד כמה הם מלאים
+# Context: how many Context files exist and how full they are
 ls -la Context/ 2>/dev/null
 wc -l Context/*.md 2>/dev/null
-# סמן קבצים ריקים או רק-תבנית. מציין מקום אמיתי מהשלד = סוגריים מרובעים בודדים עם טקסט עברית בפנים
-# (למשל "[שם, תפקיד]"). חובה לא לספור frontmatter (tags:), קולאאוטים ([!note]), או קישורי ויקי ([[...]]).
+# Flag empty or template-only files. A real placeholder from the skeleton = single square brackets with Hebrew text inside
+# (e.g. "[name, role]"). Be sure not to count frontmatter (tags:), callouts ([!note]), or wikilinks ([[...]]).
 grep -rnE '\[[^]!]*[א-ת][^]]*\]' Context/ 2>/dev/null | grep -v 'tags:' | grep -v '\[\[' | grep -v '\[!'
 
-# יכולות: אילו מיומנויות ותתי-סוכנים קיימים
+# Capabilities: which skills and subagents exist
 ls -d Skills/*/ 2>/dev/null
 ls .claude/agents/*.md 2>/dev/null
 
-# חיבורים וקצב: מצב אחרון של המערכת
+# Connections and cadence: the latest system state
 cat System/health/status.md 2>/dev/null
 ls System/logs/ 2>/dev/null | tail -7
 ```
 
-מה לחלץ מכל מקור:
-- **הקשר**: כמה מ-8 קבצי הליבה ב-`Context/` קיימים ובאמת מלאים (לא תבנית ריקה עם `[סוגריים]`). הקבצים: `me.md`, `business.md`, `services.md`, `icp.md`, `brand.md`, `strategy.md`, `infrastructure.md`, `pain-points.md`.
-- **חיבורים**: מתוך `System/health/status.md` ו-`Context/infrastructure.md`, אילו מערכות מחוברות בפועל: Gmail, Drive, Calendar, WhatsApp, ומקורות נתונים נוספים. חיבור נחשב רק אם יש לו עדות (סטטוס "מחובר" או ריצה מוצלחת אחרונה), לא רק כוונה.
-- **יכולות**: כמה מיומנויות ב-`Skills/` ותתי-סוכנים ב-`.claude/agents/` קיימים ותקינים (יש להם `SKILL.md`).
-- **קצב**: אילו שגרות מתוזמנות רצות, ומתי רצו לאחרונה לפי `System/logs/` ו-`System/health/status.md`. שגרה שלא רצה שבוע נחשבת תקועה.
+What to extract from each source:
+- **Context**: how many of the 8 core files in `Context/` exist and are really filled (not an empty template with `[brackets]`). The files: `me.md`, `business.md`, `services.md`, `icp.md`, `brand.md`, `strategy.md`, `infrastructure.md`, `pain-points.md`.
+- **Connections**: from `System/health/status.md` and `Context/infrastructure.md`, which systems are actually connected: Gmail, Drive, Calendar, WhatsApp, and any additional data sources. A connection counts only if it has evidence (a "connected" status or a recent successful run), not just intent.
+- **Capabilities**: how many skills in `Skills/` and subagents in `.claude/agents/` exist and are valid (they have a `SKILL.md`).
+- **Cadence**: which scheduled routines run, and when they last ran, per `System/logs/` and `System/health/status.md`. A routine that has not run for a week counts as stuck.
 
-אם תיקייה חסרה לגמרי, זה ממצא בפני עצמו (ציון נמוך ל-C הזה), לא שגיאה. המשך.
+If a folder is missing entirely, that is a finding in itself (a low score for that C), not an error. Continue.
 
-## שלב 2: מתן ציון לכל C
+## Step 2: Score each C
 
-לפי `references/four-c-rubric.md`, תן לכל C ציון 0 עד 100 ומשפט אחד עם **הסיבה המכרעת** לציון (לא תיאור כללי, אלא מה ספציפית הכריע: "5 מתוך 8 קבצי הקשר ריקים", "וואטסאפ לא מחובר", "אין אף שגרה שרצה השבוע").
+Per `references/four-c-rubric.md`, give each C a score of 0 to 100 and one sentence with the **deciding reason** for the score (not a generic description, but what specifically decided it: "5 of 8 context files are empty", "WhatsApp is not connected", "no routine ran this week").
 
-חשב ציון כולל כממוצע פשוט של ארבעת ה-C, מעוגל למספר שלם.
+Compute an overall score as a simple average of the four C's, rounded to a whole number.
 
-| ציון | פירוש |
+| Score | Meaning |
 | --- | --- |
-| 80 עד 100 | מערכת בנויה. תרוץ ביקורת פעם בחודש. |
-| 60 עד 79 | בסיס טוב, יש פערים ברורים. טפל בשלושת הפערים. |
-| 40 עד 59 | חצי מערכת. חוסר בנייה פוגע בתועלת. |
-| מתחת ל-40 | בעיקר שלד. צריך בנייה אמיתית לפני שזה עובד לבד. |
+| 80 to 100 | A built-out system. Run an audit once a month. |
+| 60 to 79 | Good base, clear gaps. Handle the three gaps. |
+| 40 to 59 | Half a system. Missing build hurts the value. |
+| Under 40 | Mostly a skeleton. Needs real building before it works on its own. |
 
-## שלב 3: דירוג הפערים לפי מינוף
+## Step 3: Rank the gaps by leverage
 
-זה הלב של הביקורת. אל תרשום את כל מה שחסר. בחר את **שלושת הפערים שייתנו הכי הרבה תמורה** אם יסגרו, ודרג אותם מהגבוה לנמוך.
+This is the heart of the audit. Do not list everything that is missing. Pick the **three gaps that would give the most return** if closed, and rank them from highest to lowest.
 
-מינוף = כמה זמן או כסף הפער הזה מבזבז כרגע, כפול כמה קל לסגור אותו. פער שחוסם שלוש שגרות אחרות מנצח פער קוסמטי. שאל: "אם אסגור רק את זה השבוע, מה ישתחרר?"
+Leverage = how much time or money this gap wastes right now, times how easy it is to close. A gap that blocks three other routines beats a cosmetic gap. Ask: "If I close only this one this week, what gets unblocked?"
 
-לכל פער כתוב:
-- **הפער**: משפט אחד, ספציפי. עם `[[קישור]]` לישות אם רלוונטי.
-- **למה זה מזיז**: מה זה חוסם או מבזבז כרגע.
-- **הפעולה הבאה**: צעד קונקרטי אחד שאפשר לעשות, רצוי באיזו מיומנות (למשל "הרץ `/connect` כדי לחבר את Gmail", "מלא את `Context/icp.md`", "תזמן את `/morning-report`").
+For each gap write:
+- **The gap**: one sentence, specific. With a `[[wikilink]]` to the entity if relevant.
+- **Why it matters**: what it blocks or wastes right now.
+- **The next action**: one concrete step you can take, ideally in some skill (e.g. "run `/connect` to connect Gmail", "fill `Context/icp.md`", "schedule `/morning-report`").
 
-## שלב 4: כתיבת הדוח
+## Step 4: Write the report
 
-כתוב את הדוח ל-`System/health/audit-YYYY-MM-DD.md` (החלף בתאריך של היום). Markdown בלבד, בלי HTML. שמור בדיוק את המבנה הזה:
+Write the report to `System/health/audit-YYYY-MM-DD.md` (replace with today's date). Markdown only, no HTML. Render the report content to the user in Hebrew. Keep exactly this structure (the headings and display values are shown in Hebrew because this is the client-facing deliverable):
 
 ```markdown
 ---
@@ -103,11 +105,11 @@ tags: [audit, health, 4c]
 **הפעולה הבאה:** {...}
 ```
 
-קול המסמך: כמו חבר צוות, לא כמו AI. ספציפי. "5 מתוך 8 קבצי הקשר ריקים, ו-`Context/icp.md` כולו תבנית. בלי ICP, `/morning-report` לא יודע על מי לדבר." לא "ההקשר זקוק להשלמה."
+Document voice: like a teammate, not like an AI. Specific. "5 of 8 context files are empty, and `Context/icp.md` is all template. Without an ICP, `/morning-report` does not know who to talk about." Not "the context needs completing."
 
-## שלב 5: רישום ריצה
+## Step 5: Log the run
 
-הוסף שורת לוג ל-`System/logs/YYYY-MM-DD.md` (צור את הקובץ אם אין) ועדכן את שורת `audit` בטבלת השגרות ב-`System/health/status.md` (חותמת זמן אחרונה + סטטוס). שים לב: השלד של `status.md` (זה ש-`/connect` ו-`/doctor` יוצרים) כולל רק שורת `morning-report`. אם אין שורת `audit`, הוסף אותה לטבלת השגרות (בפורמט הזהה: `| audit | {תאריך} | ✅ הצליח | על פי דרישה |`) ואז עדכן אותה. אל תדרוס את שורת `morning-report`.
+Add a log line to `System/logs/YYYY-MM-DD.md` (create the file if there is none) and update the `audit` row in the routines table in `System/health/status.md` (last timestamp + status). Note: the `status.md` skeleton (the one `/connect` and `/doctor` create) has only a `morning-report` row. If there is no `audit` row, add it to the routines table (in the same format: `| audit | {date} | ✅ הצליח | על פי דרישה |`) and then update it. Do not overwrite the `morning-report` row.
 
 ```bash
 DATE=$(date +%F); TIME=$(date +%H:%M)
@@ -116,29 +118,29 @@ printf -- '- %s | audit | ✅ הצליח | ציון כולל %s/100, %s פערי
   "$TIME" "$SCORE" "3" "$DUR" >> "System/logs/$DATE.md"
 ```
 
-(החלף `$SCORE` בציון הכולל ו-`$DUR` במשך בשניות. אם המערכת רעועה, השתמש ב-⚠️ חלקי במקום ✅ הצליח.)
+(Replace `$SCORE` with the overall score and `$DUR` with the duration in seconds. If the system is shaky, use ⚠️ חלקי instead of ✅ הצליח.)
 
-## שלב 6: סיכום והמלצה
+## Step 6: Summary and recommendation
 
-בצ'אט, החזר תשובה קצרה: הציון הכולל, שורה אחת לכל פער, והנתיב לדוח. אל תדביק את כל הדוח בצ'אט.
+In the chat, return a short reply: the overall score, one line per gap, and the path to the report. Do not paste the whole report into the chat.
 
-סיים תמיד בהמלצה: **"להעמקה במה לבנות עכשיו, הרץ `/level-up`."** הביקורת מגלה את הפערים, `/level-up` הופך אותם למיומנות הבאה.
+Always end with a recommendation: **"To dig deeper into what to build now, run `/level-up`."** The audit surfaces the gaps, `/level-up` turns them into the next skill.
 
-## חוקים
+## Rules
 
-1. ראיות לפני ציון. אל תנחש כמה בנוי, תקרא את `Context/`, `Skills/`, `System/health/status.md` ולוגים.
-2. חיבור נחשב רק עם עדות (סטטוס מחובר או ריצה מוצלחת), לא כוונה.
-3. הסיבה המכרעת היא משפט ספציפי אחד, לא תיאור כללי.
-4. תמיד שלושה פערים בדיוק, מדורגים לפי מינוף, כל אחד עם פעולה קונקרטית אחת.
-5. Markdown בלבד. בלי HTML. בלי דשבורד.
-6. הדוח נכתב ל-`System/health/audit-YYYY-MM-DD.md` עם frontmatter `type: health`. לעולם לא לשורש.
-7. כל ריצה כותבת שורת לוג ומעדכנת את `System/health/status.md`.
-8. אל תדביק את הדוח המלא בצ'אט. רק סיכום ונתיב.
-9. לעולם אל תשתמש במקף ארוך. פסיק, נקודה, נקודתיים, או פיצול למשפטים.
-10. סיים תמיד בהמלצה להריץ `/level-up`.
+1. Evidence before score. Do not guess how much is built, read `Context/`, `Skills/`, `System/health/status.md` and the logs.
+2. A connection counts only with evidence (a connected status or a successful run), not intent.
+3. The deciding reason is one specific sentence, not a generic description.
+4. Always exactly three gaps, ranked by leverage, each with one concrete action.
+5. Markdown only. No HTML. No dashboard.
+6. The report is written to `System/health/audit-YYYY-MM-DD.md` with `type: health` frontmatter. Never to the root.
+7. Every run writes a log line and updates `System/health/status.md`.
+8. Do not paste the full report into the chat. Only a summary and the path.
+9. Never use an em dash. Comma, period, colon, or split into sentences.
+10. Always end with the recommendation to run `/level-up`.
 
-## פתרון תקלות
+## Troubleshooting
 
-- **תיקייה חסרה (`Context/` או `Skills/`)**: לא שגיאה. ציון נמוך ל-C הזה, וזה כנראה הפער הראשון בדירוג. אם כל המבנה חסר, המלץ קודם להריץ `/onboard`.
-- **אין `System/health/status.md`**: סימן שאף שגרה לא רצה. תן ציון קצב נמוך, וציין שצריך להריץ ולתזמן שגרה אחת לפחות.
-- **קבצי Context מלאים סוגריים `[...]`**: זו תבנית ריקה, לא תוכן. אל תספור אותם כמלאים.
+- **A missing folder (`Context/` or `Skills/`)**: not an error. A low score for that C, and it is probably the top-ranked gap. If the whole structure is missing, recommend running `/onboard` first.
+- **No `System/health/status.md`**: a sign that no routine has run. Give a low cadence score, and note that at least one routine needs to be run and scheduled.
+- **Context files full of brackets `[...]`**: that is an empty template, not content. Do not count them as filled.

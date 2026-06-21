@@ -5,22 +5,24 @@ status: active
 tags: [context, icp]
 ---
 
-> [!note] הלקוח האידיאלי: מי הוא, מה הוא רוצה, ואיך הוא מדבר.
+> [!note] The ideal customer: who they are, what they want, and how they talk.
 
-## מי הלקוח
-[תפקיד, תחום, גודל עסק, מי מקבל את ההחלטה]
+These fields are filled at runtime by `/onboard` in Hebrew: the client's answers are written in Hebrew under these English headers.
 
-## איך נראה היום שלו
-[במה הוא עסוק, באילו כלים הוא חי]
+## Who the customer is
+[Role, field, business size, who makes the decision]
 
-## המילים שלו
-[איך הוא מתאר את הבעיה במילים שלו, לא במילים שלי]
+## What their day looks like
+[What they are busy with, which tools they live in]
 
-## מה הוא רוצה
-[התוצאה החלומית, ומה גרם לו להתחיל לחפש פתרון]
+## Their words
+[How they describe the problem in their words, not in mine]
 
-## כמה זמן לוקח לו להחליט
-[משך תהליך הקנייה]
+## What they want
+[The dream outcome, and what made them start looking for a solution]
 
-## דוגמאות אמיתיות
-[3 עד 5 שמות, פרופילים, או חברות]
+## How long it takes them to decide
+[Length of the buying process]
+
+## Real examples
+[3 to 5 names, profiles, or companies]

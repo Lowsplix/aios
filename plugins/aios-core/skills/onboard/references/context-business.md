@@ -5,13 +5,15 @@ status: active
 tags: [context, business]
 ---
 
-> [!note] העסק עצמו: מה הוא, איך הוא בנוי, מאיפה מגיע הכסף.
+> [!note] The business itself: what it is, how it is built, where the money comes from.
 
-## מה העסק עושה
-[משפט אחד שמסביר את העסק לזר]
+These fields are filled at runtime by `/onboard` in Hebrew: the client's answers are written in Hebrew under these English headers.
 
-## קווי הכנסה
-[כל קו: שם, מה הוא נותן, למי, באיזה שלב, כמה הוא מכניס היום]
+## What the business does
+[One sentence that explains the business to a stranger]
 
-## איך זה התחיל
-[הרקע: מה גרם לי להקים את זה]
+## Revenue lines
+[Each line: name, what it provides, to whom, at what stage, how much it brings in today]
+
+## How it started
+[The background: what led me to start this]
